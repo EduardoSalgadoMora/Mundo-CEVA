@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mundo CEVA</title>
+<link rel="icon" type="image/png" href="icono.png">
+<link rel="apple-touch-icon" href="icono.png">
+<link href="fonts/fonts.css" rel="stylesheet">
+<script src="ceva.js"></script>
+<script src="premios.js"></script>
+<style>
+:root{
+  --bg1:#FFE3C9; --bg2:#C9F1EC; --ink:#17324D; --soft:#4A6178;
+  --card:#FFFFFF; --cardInk:#17324D; --btn:#FFF4E2; --line:#17324D; --accent:#E8457A; --sun:#FFD23F;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg1:#2A1E3D;--bg2:#0C2A35;--ink:#EEF4F7;--soft:#AFC2CC;--card:#16303F;--cardInk:#EEF4F7;--btn:#20465A;--line:#8FB9C8;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg1:#2A1E3D;--bg2:#0C2A35;--ink:#EEF4F7;--soft:#AFC2CC;--card:#16303F;--cardInk:#EEF4F7;--btn:#20465A;--line:#8FB9C8;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{margin:0;min-height:100%;font-family:"Nunito",system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+main{max-width:760px;margin:0 auto;padding:22px 16px 40px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:"Baloo 2","Nunito",sans-serif;font-weight:800;margin:0;line-height:1.05}
+h1{font-size:clamp(2.2rem,9vw,3.2rem)}
+h2{font-size:clamp(1.5rem,6vw,2rem)}
+h3{font-size:1.3rem}
+.lead{margin:6px 0 0;color:var(--soft);font-weight:800;font-size:1.05rem}
+.hint{margin:0;color:var(--soft);font-weight:700;font-size:.95rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.btn{font:inherit;font-weight:900;font-size:1rem;padding:10px 14px;border-radius:14px;border:3px solid var(--line);background:var(--btn);color:var(--cardInk);box-shadow:0 4px 0 var(--line);cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.go{background:var(--accent);color:#fff}
+.btn.danger{background:#fff;color:#C62839;border-color:#C62839;box-shadow:0 4px 0 #C62839}
+.btn:disabled{opacity:.5}
+button:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+.card{background:var(--card);color:var(--cardInk);border:3px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.profiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.prof{font:inherit;color:var(--cardInk);background:var(--card);border:3px solid var(--line);border-radius:26px;box-shadow:0 6px 0 var(--line);
+  padding:18px 12px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+.prof:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.prof b{font-family:"Baloo 2",sans-serif;font-size:1.5rem;font-weight:800}
+.prof small{color:var(--soft);font-weight:800}
+.ava{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:3.4rem;border:3px solid var(--line);position:relative;flex:none}
+.ava img.ph{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.ava .badge{position:absolute;right:-10px;bottom:-8px;font-size:1.7rem;line-height:1}
+.ava .badge img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+.ava.sm{width:56px;height:56px;font-size:2rem}
+.ava.sm .badge{display:none}
+.top{display:flex;align-items:center;gap:14px}
+.top .ava{width:76px;height:76px;font-size:2.6rem}
+.top .ava .badge img{width:34px;height:34px}
+.gear{font-size:1.5rem;width:54px;height:54px;padding:0;border-radius:50%}
+.subjects{display:grid;gap:14px}
+.subj{font:inherit;text-align:left;color:var(--cardInk);background:var(--card);border:3px solid var(--line);border-radius:24px;box-shadow:0 6px 0 var(--line);padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer}
+.subj:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.subj .ic{width:64px;height:64px;flex:none;border-radius:18px;display:grid;place-items:center;font-size:2.2rem;border:3px solid var(--line)}
+.subj b{display:block;font-family:"Baloo 2",sans-serif;font-size:1.45rem;font-weight:800;line-height:1.1}
+.subj small{display:block;color:var(--soft);font-weight:800}
+.meter{height:12px;border-radius:99px;border:2px solid var(--line);background:var(--btn);overflow:hidden;margin-top:8px}
+.meter span{display:block;height:100%;background:var(--sun)}
+.empty{background:var(--card);border:3px dashed var(--line);border-radius:20px;padding:18px;text-align:center;font-weight:800;color:var(--soft)}
+.wallet{display:inline-flex;align-items:center;gap:6px;background:var(--card);color:var(--cardInk);border:3px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:900;font-size:1.1rem}
+.fact{background:#FFF4C2;color:#3A2E00;border:3px solid #C99A1C;border-radius:20px;padding:14px 16px;line-height:1.5}
+.fact b{display:block;font-family:"Baloo 2",sans-serif;font-size:1.2rem;margin-bottom:4px}
+.coll{display:flex;flex-wrap:wrap;gap:8px;font-size:2.2rem;background:var(--card);border:3px solid var(--line);border-radius:20px;padding:10px 12px;min-height:62px;align-items:center}
+.coll img{width:52px;height:52px;object-fit:contain}
+.coll .none{font-size:1rem;font-weight:800;color:var(--soft)}
+.shopgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.item{font:inherit;color:var(--cardInk);background:var(--card);border:3px solid var(--line);border-radius:20px;box-shadow:0 5px 0 var(--line);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.item:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.item .e{width:84px;height:84px;display:grid;place-items:center;font-size:3rem}
+.item .e img{width:84px;height:84px;object-fit:contain}
+.item b{font-size:1rem;text-align:center}
+.item .price{font-weight:900;background:var(--btn);border-radius:99px;padding:2px 10px;border:2px solid var(--line)}
+.item.owned .price{background:#5BC67A;color:#fff}
+.item.poor{opacity:.55}
+.item.worn{outline:4px solid var(--accent);outline-offset:2px}
+.rar{font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.04em;opacity:.75}
+.rar.épica{color:#8E44AD;opacity:1}.rar.legendaria{color:#C98A00;opacity:1}
+label.f,.f{font-weight:900;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=password],input[type=number],textarea{font:inherit;font-size:1.1rem;font-weight:800;padding:10px 12px;border-radius:12px;border:3px solid var(--line);background:var(--btn);color:var(--cardInk);width:100%}
+textarea{min-height:80px;resize:vertical;font-weight:700}
+.pickgrid{display:flex;flex-wrap:wrap;gap:8px}
+.pick{width:52px;height:52px;border-radius:14px;border:3px solid var(--line);background:var(--btn);font-size:1.7rem;cursor:pointer;padding:0}
+.pick.sel{outline:4px solid var(--accent);outline-offset:2px}
+.sw{width:44px;height:44px;border-radius:50%;border:3px solid var(--line);cursor:pointer;padding:0}
+.sw.sel{outline:4px solid var(--accent);outline-offset:3px}
+.toggle{display:flex;align-items:center;gap:12px;padding:10px 12px;border:3px solid var(--line);border-radius:16px;background:var(--btn);cursor:pointer;font:inherit;font-weight:900;color:var(--cardInk);text-align:left}
+.toggle .box{width:30px;height:30px;border-radius:8px;border:3px solid var(--line);display:grid;place-items:center;flex:none;background:var(--card)}
+.toggle.on .box{background:var(--accent);color:#fff}
+details.sec{background:var(--card);color:var(--cardInk);border:3px solid var(--line);border-radius:20px;padding:4px 16px}
+details.sec>summary{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1.35rem;padding:10px 0;cursor:pointer;list-style:none}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:" ▾";opacity:.6}
+details.sec[open]>summary::after{content:" ▴"}
+details.sec>div{display:flex;flex-direction:column;gap:12px;padding:4px 0 16px}
+.list{display:flex;flex-direction:column;gap:8px}
+.lrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border:3px solid var(--line);border-radius:14px;background:var(--btn)}
+.lrow b{flex:1}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.slot{font:inherit;color:var(--cardInk);background:var(--btn);border:3px dashed var(--line);border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-weight:800;font-size:.85rem;text-align:center}
+.slot.full{border-style:solid;background:var(--card)}
+.slot .im{width:56px;height:56px;display:grid;place-items:center;font-size:1.6rem;opacity:.8}
+.slot .im img{width:56px;height:56px;object-fit:contain}
+.slot.lock{opacity:.7}
+.bannerprev{width:100%;aspect-ratio:3/1;border:3px solid var(--line);border-radius:14px;overflow:hidden;background:var(--btn);display:grid;place-items:center;font-weight:800;color:var(--soft)}
+.bannerprev img{width:100%;height:100%;object-fit:cover;display:block}
+.facts{max-height:340px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.facts .lrow{align-items:flex-start;font-weight:700;font-size:.92rem}
+.facts .lrow.off{opacity:.45}
+.modal{position:fixed;inset:0;z-index:1500;background:rgba(10,20,30,.7);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .card{width:100%;max-width:380px}
+.crop-frame{position:relative;overflow:hidden;margin:0 auto;border:3px solid var(--line);touch-action:none;background:#222;border-radius:8px}
+.crop-frame.round::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.55);pointer-events:none}
+.crop-frame img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;user-select:none;pointer-events:none}
+input[type=range]{width:100%}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#17324D;color:#fff;font-weight:900;padding:12px 18px;border-radius:16px;z-index:3000;max-width:90vw;text-align:center}
+[hidden]{display:none!important}
+
+/* ---------- tema Minecraft (como Lengua) ---------- */
+:root{--bg1:#7EC8F2;--bg2:#BFE6FA;--ink:#1E1E1E;--soft:#3E4A55;--card:#F3F0E8;--cardInk:#1E1E1E;--btn:#C6C6C6;--line:#1B1B1B;--accent:#5BA33B;--sun:#F2C94C}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg1:#0E1430;--bg2:#26305E;--ink:#F2F2F2;--soft:#C3CAE6;--card:#2B2B33;--cardInk:#F2F2F2;--btn:#4A4A52;--line:#0A0A0A}
+}
+:root[data-theme="dark"]{--bg1:#0E1430;--bg2:#26305E;--ink:#F2F2F2;--soft:#C3CAE6;--card:#2B2B33;--cardInk:#F2F2F2;--btn:#4A4A52;--line:#0A0A0A}
+body{background:linear-gradient(to bottom,var(--bg1),var(--bg2) 70%);display:flex;flex-direction:column}
+main{width:100%}
+.ground{height:48px;margin-top:auto;flex:none;background:linear-gradient(to bottom,#5BA33B 0 14px,#3E7A26 14px 20px,#7B5531 20px);border-top:3px solid var(--line)}
+.ground::after{content:"";display:block;height:100%;background-image:linear-gradient(90deg,rgba(0,0,0,.12) 50%,transparent 50%);background-size:32px 100%}
+h1,h2{font-family:"Press Start 2P",monospace;font-weight:400;line-height:1.4;letter-spacing:.02em;text-shadow:3px 3px 0 rgba(0,0,0,.18)}
+h1{font-size:clamp(1.1rem,5.4vw,1.7rem)}
+h2{font-size:clamp(.95rem,4.2vw,1.25rem)}
+.prof b,.subj b,details.sec>summary,.fact b{font-family:"Nunito",system-ui,sans-serif;font-weight:900}
+.btn,.prof,.subj,.item,.card,.wallet,.coll,.empty,.fact,.lrow,.slot,.toggle,.toggle .box,details.sec,.pick,.meter,.bannerprev,
+input[type=text],input[type=password],input[type=number],textarea,.subj .ic,.item .price,.crop-frame,.toast{border-radius:0}
+.btn{box-shadow:inset -4px -4px 0 rgba(0,0,0,.3),inset 4px 4px 0 rgba(255,255,255,.3)}
+.btn:active{transform:none;box-shadow:inset 4px 4px 0 rgba(0,0,0,.3)}
+.btn.go{background:#5BA33B;color:#fff}
+.prof,.subj,.item,.card,details.sec,.coll{box-shadow:inset -5px -5px 0 rgba(0,0,0,.12),inset 5px 5px 0 rgba(255,255,255,.2)}
+.prof:active,.subj:active,.item:active{transform:translateY(2px);box-shadow:inset 4px 4px 0 rgba(0,0,0,.15)}
+.prof:hover,.subj:hover{transform:translateY(-2px)}
+.ava,.ava img.ph{border-radius:0}
+.ava{box-shadow:inset -5px -5px 0 rgba(0,0,0,.25),inset 5px 5px 0 rgba(255,255,255,.25)}
+.subj .ic{box-shadow:inset -5px -5px 0 rgba(0,0,0,.25),inset 5px 5px 0 rgba(255,255,255,.25)}
+.meter{background:var(--card)}
+.meter span{background:#5FE3D6}
+.wallet{font-family:"Press Start 2P",monospace;font-size:.8rem;padding:8px 12px}
+.fact{border-color:#1B1B1B}
+.gear{border-radius:0}
+.toast{background:#1E1E1E}
+</style>
+</head>
+<body>
+<main>
+  <!-- INICIO -->
+  <section id="home">
+    <div class="row between"><h1>Mundo CEVA</h1><div class="row"><button class="btn gear" id="gearBtn" aria-label="Configuración">⚙️</button><button class="btn gear" id="manualBtn" aria-label="Manual" title="Manual">📖</button></div></div>
+    <p class="lead">¿Quién juega hoy? Toca tu nombre.</p>
+    <div class="profiles" id="profiles" style="margin-top:18px"></div>
+  </section>
+
+  <!-- PERFIL -->
+  <section id="profile" hidden>
+    <div class="row between"><button class="btn" id="back">⟵ Perfiles</button><span class="wallet" id="pWallet">💎 0</span></div>
+    <div class="top" style="margin-top:16px"><div class="ava" id="pAva"></div><div><h2 id="pName"></h2><p class="lead" style="margin-top:2px">Elige una materia</p></div></div>
+    <div class="subjects" id="subjects" style="margin-top:18px"></div>
+    <button class="btn go" id="shopBtn" style="margin-top:18px;font-size:1.15rem;padding:14px">🛍️ Tienda de pegatinas</button>
+    <div class="fact" id="fact" style="margin-top:18px"></div>
+    <h3 style="margin-top:18px">Mi colección</h3>
+    <div class="coll" id="pColl" style="margin-top:8px"></div>
+  </section>
+
+  <!-- TIENDA -->
+  <section id="shop" hidden>
+    <div class="row between"><button class="btn" id="shopBack">⟵ Volver</button><span class="wallet" id="sWallet">💎 0</span></div>
+    <h2 style="margin-top:16px">Tienda de pegatinas</h2>
+    <p class="lead" style="margin-top:4px">Gana gemas en los juegos y cómprate pegatinas. Toca una que ya tengas para ponértela en el perfil.</p>
+    <div class="shopgrid" id="shopGrid" style="margin-top:16px"></div>
+  </section>
+
+  <!-- CONFIGURACIÓN -->
+  <section id="config" hidden>
+    <div class="row between"><button class="btn" id="cfgExit">⟵ Salir de configuración</button></div>
+    <h2 style="margin-top:14px">⚙️ Configuración</h2>
+    <div id="cfgBody" style="display:flex;flex-direction:column;gap:12px;margin-top:12px"></div>
+  </section>
+
+  <!-- EDITAR PERFIL -->
+  <section id="edit" hidden><div class="card" id="editBody"></div></section>
+
+  <!-- EDITAR PEGATINA -->
+  <section id="sedit" hidden><div class="card" id="seditBody"></div></section>
+</main>
+<div class="ground" aria-hidden="true"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(t){ const d=document.createElement("div"); d.className="toast"; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2000); }
+function show(id){ ["home","profile","shop","config","edit","sedit"].forEach(s=>$(s).hidden=s!==id); window.scrollTo(0,0); }
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+const SUBJECTS={
+  lengua:{name:"Lengua",sub:"Examen de Lengua: ¡A por todas!",file:"lengua.html",icon:"⛏️",bg:"#B8E28F",key:"minaPalabras_v1_",max:24},
+  ingles:{name:"Inglés",sub:"Lulu’s English Island · Unit 1",file:"ingles.html",icon:"🌺",bg:"#FFC2D4",key:"englishIsland_v1_",max:27},
+  mates:{name:"Mates",sub:"Multiplicaciones de dos cifras · La cueva profunda",file:"mates.html",icon:"✖️",bg:"#9ED9DE",key:"matesCueva_v1_",max:24},
+  ciencias:{name:"Science",sub:"Sunny’s Plant Garden · Unit 1 · Plants",file:"ciencias.html",icon:"🌻",bg:"#C8E8A8",key:"plantasScience_v1_",max:27}
+};
+const AVATARS=["🦊","🐢","🐱","🐶","🦁","🐼","🐨","🐸","🦄","🐙","🐬","🦖","🐝","🐧","🦉","🐰","🐯","🦋"];
+const COLORS=["#B8E28F","#FFC2D4","#A9DDF5","#FFE08A","#D7C2F2","#FFC79E"];
+const RARS=[["común",10],["rara",25],["épica",50],["legendaria",100]];
+const EMOJI_DEFAULTS=[
+  ["🌟","Estrella","común"],["🍦","Helado","común"],["🎈","Globo","común"],["🍕","Pizza","común"],["🐞","Mariquita","común"],["🌻","Girasol","común"],["🍩","Donut","común"],["⚽","Balón","común"],
+  ["🦄","Unicornio","rara"],["🐉","Dragón","rara"],["🚀","Cohete","rara"],["🎸","Guitarra","rara"],["🐙","Pulpo","rara"],["🦖","Dinosaurio","rara"],["🏰","Castillo","rara"],["🎨","Paleta","rara"],
+  ["🌈","Arcoíris","épica"],["💎","Diamante","épica"],["🏆","Copa","épica"],["🪐","Planeta","épica"],["🦁","León","épica"],["🐳","Ballena","épica"],
+  ["👑","Corona","legendaria"],["🐲","Dragón dorado","legendaria"],["🦚","Pavo real","legendaria"],["🎆","Fuegos artificiales","legendaria"]];
+
+/* ---------- curiosidades ---------- */
+const FACTS=[
+ ["Sangre azul","Los pulpos y los calamares tienen la sangre azul: usan cobre en lugar de hierro para llevar el oxígeno."],
+ ["Tres corazones","Los pulpos tienen tres corazones: dos para las branquias y uno para el resto del cuerpo."],
+ ["El animal más dormilón","Los koalas pueden dormir entre 18 y 22 horas al día. ¡Se pasan casi toda la vida soñando en los árboles!"],
+ ["El plátano que brilla","Con luz ultravioleta, la cáscara de un plátano maduro brilla en azul. Es por unas sustancias que se forman cuando se rompe su clorofila al madurar."],
+ ["Huella de lengua","Los científicos estudian si la huella de tu lengua es única, igual que las huellas de los dedos."],
+ ["Cuellos iguales","Una jirafa tiene en el cuello los mismos huesos que tú: siete. Solo que los suyos son enormes."],
+ ["Bailarinas de miel","Las abejas bailan para contar a sus compañeras dónde hay flores con néctar."],
+ ["Un corazón gigante","El corazón de una ballena azul pesa tanto como un coche pequeño."],
+ ["Miel eterna","La miel bien guardada casi no se estropea: se ha encontrado miel antiquísima en tumbas de Egipto."],
+ ["Flamencos rosas","Los flamencos son rosas por lo que comen: algas y gambitas con colores rosados."],
+ ["Sin cerebro","Las estrellas de mar no tienen cerebro, ¡y aun así se mueven y comen!"],
+ ["Un día muy largo","En Venus, un día dura más que un año: tarda más en girar sobre sí mismo que en dar la vuelta al Sol."],
+ ["El Sol gigante","Dentro del Sol cabrían más de un millón de planetas como la Tierra."],
+ ["Luz con retraso","La luz del Sol tarda unos 8 minutos en llegar a la Tierra."],
+ ["Huellas lunares","En la Luna no hay viento, por eso las huellas de los astronautas siguen allí."],
+ ["Medio dormido","Los delfines duermen con media parte del cerebro despierta, para poder respirar y vigilar."],
+ ["De la mano","Las nutrias marinas a veces duermen agarradas de la mano para que la corriente no las separe."],
+ ["Huesos de bebé","Los bebés nacen con unos 300 huesos. Al crecer, algunos se unen y los adultos tienen 206."],
+ ["El hueso más pequeño","El hueso más pequeño de tu cuerpo está dentro del oído y se llama estribo."],
+ ["Gatos dormilones","Los gatos pasan durmiendo más de la mitad del día."],
+ ["Buceadores de récord","Los pingüinos emperador pueden bucear a más de 500 metros de profundidad."],
+ ["El más rápido","El guepardo es el animal terrestre más rápido: en carreras cortas supera los 100 km/h."],
+ ["Vuelo marcha atrás","El colibrí puede volar hacia atrás batiendo las alas muchísimas veces por segundo."],
+ ["Sabor en los pies","Las mariposas notan el sabor con las patas: así saben si una hoja es buena para sus huevos."],
+ ["¿Insecto o no?","Las arañas no son insectos: tienen ocho patas, y los insectos tienen seis."],
+ ["La muralla invisible","La Gran Muralla China no se ve a simple vista desde el espacio, aunque mucha gente lo crea."],
+ ["La montaña más alta","El Everest es la montaña más alta del mundo: mide unos 8.849 metros."],
+ ["Un océano enorme","El océano Pacífico es más grande que toda la tierra firme del planeta junta."],
+ ["Más árboles que estrellas","En la Tierra hay más árboles que estrellas en nuestra galaxia, la Vía Láctea."],
+ ["Me veo en el espejo","Los elefantes se reconocen en un espejo, algo que muy pocos animales consiguen."],
+ ["Tres formas del agua","El agua puede ser sólida (hielo), líquida o gas (vapor)."],
+ ["Más caliente que el Sol","Un rayo está más caliente que la superficie del Sol, aunque solo un instante."],
+ ["Superfuerza","Las hormigas pueden levantar muchas veces su propio peso."],
+ ["La joroba","Los camellos no guardan agua en la joroba: guardan grasa, que les da energía."],
+ ["Papá embarazado","En los caballitos de mar es el papá quien lleva los huevos en una bolsa hasta que nacen las crías."],
+ ["Comida de luz","Las plantas fabrican su comida con la luz del sol. Se llama fotosíntesis."],
+ ["Árbol rascacielos","El árbol más alto del mundo es una secuoya de más de 115 metros, más que un edificio de 30 pisos."],
+ ["El planeta rojo","Marte es rojo porque su suelo tiene mucho óxido de hierro, como un clavo oxidado."],
+ ["Júpiter gigante","Dentro de Júpiter cabrían más de 1.300 planetas como la Tierra."],
+ ["Saturno flotaría","Saturno es tan ligero para su tamaño que flotaría en una bañera gigante llena de agua."],
+ ["Más antiguos que los dinosaurios","Los tiburones ya nadaban por los mares antes de que existieran los dinosaurios."],
+ ["Ojos grandotes","El ojo de un avestruz es más grande que su cerebro."],
+ ["Beber por la piel","Las ranas no beben con la boca: absorben el agua a través de la piel."],
+ ["Rayas únicas","No hay dos cebras con las rayas iguales."],
+ ["Uñas rápidas","Las uñas de las manos crecen más rápido que las de los pies."],
+ ["Parpadeos","Parpadeamos unas 15 o 20 veces cada minuto sin darnos cuenta."],
+ ["Corazón incansable","Tu corazón late unas 100.000 veces al día."],
+ ["Mamíferos voladores","Los murciélagos son los únicos mamíferos que pueden volar de verdad."],
+ ["Cinco vocales","La palabra “murciélago” tiene las cinco vocales: a, e, i, o, u."],
+ ["Un idioma gigante","El español lo hablan más de 500 millones de personas en el mundo."],
+ ["La letra ñ","La ñ se usa en español y en pocas lenguas más, como el gallego o el guaraní."],
+ ["Siempre mayúscula","En inglés, la palabra “I” (yo) se escribe siempre con mayúscula."],
+ ["Palabras viajeras","El inglés tiene muchísimas palabras que vienen del latín y del francés, igual que el español."],
+ ["Cambio de color","Los pulpos pueden cambiar de color en menos de un segundo para esconderse."],
+ ["Ojos de balón","El calamar colosal tiene los ojos más grandes del mundo animal, casi como un balón de fútbol."],
+ ["Volver a casa","Las tortugas marinas vuelven a la playa donde nacieron para poner sus huevos."],
+ ["Cabeza giratoria","Los búhos no pueden mover los ojos, así que giran muchísimo la cabeza: hasta unos 270 grados."],
+ ["Súper olfato","El olfato de un perro es miles de veces mejor que el nuestro."],
+ ["Cinco ojos","Las abejas tienen cinco ojos: dos grandes y tres pequeñitos en la parte de arriba de la cabeza."],
+ ["Desierto helado","La Antártida es el lugar más frío de la Tierra y también un desierto, porque casi nunca llueve."],
+ ["El desierto caliente","El Sáhara es el desierto cálido más grande del mundo."],
+ ["Volcán en Marte","El volcán más grande conocido no está en la Tierra: es el monte Olimpo, en Marte."],
+ ["Muy antiguas","Las medusas existen desde hace más de 500 millones de años."],
+ ["Dinosaurios lejanos","El tiranosaurio vivió más cerca en el tiempo de nosotros que del estegosaurio."],
+ ["Lengua pegada","Los cocodrilos no pueden sacar la lengua: la tienen sujeta por debajo."],
+ ["El hielo flota","El hielo flota porque pesa menos que la misma cantidad de agua líquida."],
+ ["¿Cómo sale el arcoíris?","El arcoíris aparece cuando la luz del sol atraviesa gotitas de agua y se separa en colores."],
+ ["Viaje a la Luna","Si fueras a la Luna en coche a 100 km/h sin parar, tardarías unos 160 días."],
+ ["Cerebro glotón","Tu cerebro gasta una quinta parte de toda la energía de tu cuerpo."],
+ ["Piel negra","Los osos polares tienen la piel negra debajo de su pelo blanco."],
+ ["Plantas carnívoras","Algunas plantas atrapan insectos para conseguir los nutrientes que no encuentran en el suelo."],
+ ["Loros parlanchines","Los loros pueden imitar palabras que oyen a las personas."],
+ ["Peces que cambian","Los peces payaso nacen machos, y algunos se convierten en hembras al crecer."],
+ ["Dientes de caracol","Los caracoles tienen miles de dientes diminutos en la lengua."],
+ ["Gusanos sin ojos","Las lombrices no tienen ojos, pero notan la luz con la piel."],
+ ["Tus pulmones","Si estiraras todos los tubitos de tus pulmones, ocuparían una distancia enorme, de muchos kilómetros."],
+ ["Huellas de dedos","Las huellas de tus dedos se forman antes de nacer y no cambian en toda tu vida."],
+ ["Los gatos ronronean","Los gatos ronronean cuando están contentos, pero también a veces para calmarse."],
+ ["Agua por todas partes","Más de la mitad de tu cuerpo es agua."],
+ ["Noches en el Polo","En el Polo Norte hay meses en los que el Sol no se pone, y otros en los que casi no sale."]
+];
+function activeFacts(){ const c=CEVA.cfg(), hid=new Set(c.factsHidden||[]); return [...FACTS.map((f,i)=>({id:"b"+i,t:f[0],x:f[1]})).filter(f=>!hid.has(f.id)),...(c.factsCustom||[]).map(f=>({id:f.id,t:f.t,x:f.x}))]; }
+function todayFact(){ const a=activeFacts(); if(!a.length) return null; const d=new Date(); const n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000); return a[n%a.length]; }
+
+/* ---------- tienda (catálogo global) ---------- */
+const shopGet=()=>CEVA.json("shop_v1",[]);
+const shopSet=s=>STORE.set("shop_v1",JSON.stringify(s));
+function ownersOf(id){ return CEVA.profiles().filter(p=>(p.owned||[]).includes(id)).map(p=>p.name); }
+function stickerHTML(id){
+  const it=shopGet().find(x=>x.id===id);
+  if(it) return it.img?`<img src="${it.img}" alt="${esc(it.name)}">`:(it.emoji||"");
+  if(/^(c:|st_)/.test(id)) return "";
+  return esc(id);
+}
+
+/* ---------- datos iniciales y migración ---------- */
+(function migrate(){
+  let ps=CEVA.profiles();
+  if(!ps.length){ ps=[{id:"p2",name:"2º Primaria",avatar:"🐢",color:"#FFC2D4",subjects:["ingles","ciencias"]},{id:"p4",name:"4º Primaria",avatar:"🦊",color:"#B8E28F",subjects:["lengua","mates"]}]; CEVA.setProfiles(ps); }
+  if(STORE.get("shop_v1")==null){
+    const shop=[];
+    RARS.forEach(([r,p])=>{ const n=r==="común"||r==="rara"?6:4; for(let i=0;i<n;i++) shop.push({id:uid("st_"),rar:r,price:p,name:"",img:null}); });
+    ps.forEach(p=>(p.custom||[]).forEach(c=>shop.push({id:"c:"+c.id,rar:c.rar,price:c.rar==="legendaria"?100:50,name:c.name,img:c.img})));
+    ps.forEach(p=>delete p.custom); CEVA.setProfiles(ps); shopSet(shop);
+  }
+  const c=CEVA.cfg();
+  if(!c.emojiDefaults){
+    const shop=shopGet(), have=new Set(shop.map(x=>x.id));
+    EMOJI_DEFAULTS.forEach(([e,n,r])=>{ if(!have.has(e)) shop.push({id:e,rar:r,price:RARS.find(x=>x[0]===r)[1],name:n,img:null,emoji:e}); });
+    shopSet(shop); c.emojiDefaults=true; CEVA.setCfg(c);
+  }
+})();
+
+/* ---------- avatar ---------- */
+function avaHTML(p){ return (p.photo?`<img class="ph" src="${p.photo}" alt="">`:p.avatar)+(p.badge?`<span class="badge">${stickerHTML(p.badge)}</span>`:""); }
+function starsOf(pid,sid){ const s=CEVA.json(SUBJECTS[sid].key+pid,null); if(!s||!s.best) return 0; return Object.values(s.best).reduce((a,b)=>a+(+b||0),0); }
+
+/* ---------- inicio ---------- */
+let current=null;
+function renderHome(){
+  const box=$("profiles"); box.innerHTML="";
+  CEVA.profiles().forEach(p=>{
+    const tot=p.subjects.reduce((a,s)=>a+(SUBJECTS[s]?starsOf(p.id,s):0),0);
+    const b=document.createElement("button"); b.className="prof";
+    b.innerHTML=`<span class="ava" style="background:${p.color}">${avaHTML(p)}</span><b>${esc(p.name)}</b><small>⭐ ${tot} · 💎 ${CEVA.wallet(p.id)}</small>`;
+    b.onclick=()=>openProfile(p.id); box.appendChild(b);
+  });
+  history.replaceState(null,"","index.html"); show("home");
+}
+function openProfile(id){
+  current=CEVA.profiles().find(p=>p.id===id); if(!current) return renderHome();
+  $("pAva").innerHTML=avaHTML(current); $("pAva").style.background=current.color;
+  $("pName").textContent=current.name; $("pWallet").textContent=`💎 ${CEVA.wallet(current.id)}`;
+  const box=$("subjects"); box.innerHTML="";
+  if(!current.subjects.length) box.innerHTML=`<div class="empty">Todavía no hay materias. Un adulto puede añadirlas en ⚙️ Configuración.</div>`;
+  current.subjects.forEach(sid=>{ const S=SUBJECTS[sid]; if(!S) return; const st=starsOf(current.id,sid);
+    const b=document.createElement("button"); b.className="subj";
+    b.innerHTML=`<span class="ic" style="background:${S.bg}">${S.icon}</span><span style="flex:1"><b>${S.name}</b><small>${S.sub}</small><div class="meter"><span style="width:${Math.round(st/S.max*100)}%"></span></div><small style="margin-top:4px">⭐ ${st}/${S.max}</small></span>`;
+    b.onclick=()=>{ location.href=`${S.file}?p=${encodeURIComponent(current.id)}`; }; box.appendChild(b); });
+  const f=todayFact(); $("fact").hidden=!f; if(f) $("fact").innerHTML=`<b>💡 ¿Sabías que…? ${esc(f.t)}</b>${esc(f.x)}`;
+  const own=current.owned||[];
+  $("pColl").innerHTML=own.length?own.map(e=>stickerHTML(e)).filter(Boolean).map(h=>`<span>${h}</span>`).join("")||`<span class="none">Aún no tienes pegatinas.</span>`:`<span class="none">Aún no tienes pegatinas. ¡Visita la tienda!</span>`;
+  history.replaceState(null,"","index.html?p="+encodeURIComponent(current.id));
+  show("profile");
+}
+$("back").onclick=renderHome;
+
+/* ---------- tienda ---------- */
+function renderShop(){
+  current=CEVA.profiles().find(p=>p.id===current.id);
+  const w=CEVA.wallet(current.id), own=current.owned||[];
+  $("sWallet").textContent=`💎 ${w}`;
+  const items=shopGet().filter(x=>(x.img||x.emoji)&&x.name).sort((a,b)=>a.price-b.price);
+  if(!items.length){ $("shopGrid").innerHTML=`<div class="empty" style="grid-column:1/-1">La tienda está vacía por ahora. Pide a un adulto que añada pegatinas.</div>`; show("shop"); return; }
+  $("shopGrid").innerHTML=items.map((it,i)=>{ const has=own.includes(it.id);
+    return `<button class="item${has?" owned":""}${!has&&w<it.price?" poor":""}${current.badge===it.id?" worn":""}" data-i="${i}"><span class="e">${it.img?`<img src="${it.img}" alt="">`:it.emoji}</span><b>${esc(it.name)}</b><span class="rar ${it.rar}">${it.rar}</span><span class="price">${has?(current.badge===it.id?"En tu perfil":"✔ Tuya"):"💎 "+it.price}</span></button>`; }).join("");
+  $("shopGrid").querySelectorAll(".item").forEach(b=>b.onclick=()=>{
+    const it=items[+b.dataset.i], ps=CEVA.profiles(), me=ps.find(p=>p.id===current.id); me.owned=me.owned||[];
+    if(me.owned.includes(it.id)){ me.badge=me.badge===it.id?null:it.id; CEVA.setProfiles(ps); current=me; renderShop(); toast(me.badge?`${it.name}: puesta en tu perfil`:"Pegatina quitada del perfil"); return; }
+    const wl=CEVA.wallet(me.id); if(wl<it.price){ toast(`Te faltan ${it.price-wl} 💎`); return; }
+    if(!confirm(`¿Comprar “${it.name}” por ${it.price} gemas?`)) return;
+    me.spent=(me.spent||0)+it.price; me.owned.push(it.id); CEVA.setProfiles(ps); current=me; renderShop(); toast(`¡Conseguida! ${it.name}`);
+  });
+  show("shop");
+}
+$("shopBtn").onclick=renderShop;
+$("shopBack").onclick=()=>openProfile(current.id);
+
+/* ---------- recorte de imágenes ---------- */
+function pickAndCrop(opt){
+  return new Promise(res=>{
+    const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
+    inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return res(null);
+      const r=new FileReader();
+      r.onload=()=>{ const img=new Image(); img.onload=()=>cropUI(img,opt,res); img.onerror=()=>{ toast("No he podido abrir esa imagen"); res(null); }; img.src=r.result; };
+      r.readAsDataURL(f); };
+    inp.click();
+  });
+}
+function cropUI(img,opt,res){
+  const md=document.createElement("div"); md.className="modal";
+  md.innerHTML=`<div class="card"><b style="font-size:1.1rem">Mueve la imagen con el dedo y ajusta el tamaño</b><div class="crop-frame${opt.round?" round":""}"><img alt=""></div>
+    <label class="f" style="font-weight:800">Zoom<input type="range" min="1" max="4" step="0.01" value="1"></label>
+    <div class="row" style="justify-content:flex-end"><button class="btn" data-c>Cancelar</button><button class="btn go" data-o>Usar</button></div></div>`;
+  document.body.appendChild(md);
+  const fr=md.querySelector(".crop-frame"), im=md.querySelector("img"), rg=md.querySelector("input");
+  const FW=Math.min(320,window.innerWidth-80), FH=FW/opt.aspect; fr.style.width=FW+"px"; fr.style.height=FH+"px";
+  const iw=img.naturalWidth, ih=img.naturalHeight, s0=Math.max(FW/iw,FH/ih);
+  let z=1, ox=(FW-iw*s0)/2, oy=(FH-ih*s0)/2; const sc=()=>s0*z;
+  im.src=img.src; im.style.width=iw+"px"; im.style.height=ih+"px";
+  function draw(){ const w=iw*sc(), h=ih*sc(); ox=Math.min(0,Math.max(FW-w,ox)); oy=Math.min(0,Math.max(FH-h,oy)); im.style.transform=`translate(${ox}px,${oy}px) scale(${sc()})`; }
+  function zoomTo(nz,cx=FW/2,cy=FH/2){ nz=Math.max(1,Math.min(4,nz)); const k=nz/z; ox=cx-(cx-ox)*k; oy=cy-(cy-oy)*k; z=nz; rg.value=z; draw(); }
+  draw();
+  const pts=new Map(); let lastDist=0;
+  const pos=e=>{ const r=fr.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; };
+  fr.addEventListener("pointerdown",e=>{ e.preventDefault(); try{fr.setPointerCapture(e.pointerId);}catch(_){} pts.set(e.pointerId,pos(e)); if(pts.size===2){ const [a,b]=[...pts.values()]; lastDist=Math.hypot(a.x-b.x,a.y-b.y); } });
+  fr.addEventListener("pointermove",e=>{ if(!pts.has(e.pointerId))return; const p=pos(e), prev=pts.get(e.pointerId); pts.set(e.pointerId,p);
+    if(pts.size===1){ ox+=p.x-prev.x; oy+=p.y-prev.y; draw(); }
+    else if(pts.size===2){ const [a,b]=[...pts.values()], d=Math.hypot(a.x-b.x,a.y-b.y); if(lastDist>0) zoomTo(z*d/lastDist,(a.x+b.x)/2,(a.y+b.y)/2); lastDist=d; } });
+  const up=e=>{ pts.delete(e.pointerId); lastDist=0; };
+  fr.addEventListener("pointerup",up); fr.addEventListener("pointercancel",up);
+  rg.oninput=()=>zoomTo(+rg.value);
+  md.querySelector("[data-c]").onclick=()=>{ md.remove(); res(null); };
+  md.querySelector("[data-o]").onclick=()=>{
+    const c=document.createElement("canvas"); c.width=opt.w; c.height=opt.h;
+    c.getContext("2d").drawImage(img,-ox/sc(),-oy/sc(),FW/sc(),FH/sc(),0,0,opt.w,opt.h);
+    let d=c.toDataURL(opt.type||"image/jpeg",.85);
+    if(opt.type==="image/webp"&&!d.startsWith("data:image/webp")) d=c.toDataURL("image/png");
+    md.remove(); res(d);
+  };
+}
+
+/* ---------- contraseña ---------- */
+function askPass(){
+  return new Promise(res=>{
+    const md=document.createElement("div"); md.className="modal";
+    md.innerHTML=`<div class="card"><b style="font-size:1.2rem">🔒 Zona de adultos</b><label class="f">Contraseña<input type="password" inputmode="numeric" autocomplete="off"></label>
+      <p class="hint" data-e></p><p class="hint">L@s peques descubren con facilidad la contraseña. Yo la he tenido que cambiar y, aun así, lo siguen intentando.</p>
+      <p class="hint" data-f>Intentos fallidos: <b>${+STORE.get("pass_fallos")||0}</b></p><div class="row" style="justify-content:flex-end"><button class="btn" data-c>Cancelar</button><button class="btn go" data-o>Entrar</button></div></div>`;
+    document.body.appendChild(md); const inp=md.querySelector("input"); inp.focus();
+    const ok=()=>{ if(inp.value===String(CEVA.cfg().pass)){ md.remove(); res(true); } else { const n=(+STORE.get("pass_fallos")||0)+1; STORE.set("pass_fallos",String(n)); md.querySelector("[data-f] b").textContent=n; md.querySelector("[data-e]").textContent="Contraseña incorrecta"; inp.value=""; inp.focus(); } };
+    md.querySelector("[data-o]").onclick=ok; inp.onkeydown=e=>{ if(e.key==="Enter") ok(); };
+    md.querySelector("[data-c]").onclick=()=>{ md.remove(); res(false); };
+  });
+}
+$("gearBtn").onclick=async()=>{ if(await askPass()) renderConfig(); };
+$("manualBtn").onclick=()=>{ if(window.Android) location.href="manual.html"; else window.open("manual.pdf","_blank"); };
+$("cfgExit").onclick=renderHome;
+
+/* ---------- configuración ---------- */
+let openSec="perfiles";
+function sec(id,title,html){ return `<details class="sec" data-sec="${id}"${openSec===id?" open":""}><summary>${title}</summary><div>${html}</div></details>`; }
+function renderConfig(){
+  const c=CEVA.cfg(), ps=CEVA.profiles(), shop=shopGet();
+  const prof=`<div class="list">${ps.map(p=>`<div class="lrow"><span class="ava sm" style="background:${p.color}">${avaHTML(p)}</span><b>${esc(p.name)}<br><small style="font-weight:700;opacity:.75">${p.subjects.map(s=>SUBJECTS[s]?SUBJECTS[s].name:"").join(", ")||"Sin materias"} · 💎 ${CEVA.wallet(p.id)}</small></b><button class="btn" data-ep="${p.id}">Editar</button></div>`).join("")}</div>
+    <button class="btn" data-np>＋ Añadir perfil</button>`;
+  const tienda=`<p class="hint">Rellena los huecos con imágenes, nombre y precio. Las de emoticono vienen de serie y también se pueden cambiar por una imagen tuya. Los huecos vacíos no salen en la tienda. Una pegatina que ya está en la colección de alguien no se puede editar.</p>`+
+    RARS.map(([r])=>`<b class="rar ${r}" style="font-size:.95rem">${r}</b><div class="slots">${shop.filter(x=>x.rar===r).map(x=>{ const own=ownersOf(x.id);
+      return `<button class="slot${x.img||x.emoji?" full":""}${own.length?" lock":""}" data-st="${x.id}"><span class="im">${x.img?`<img src="${x.img}" alt="">`:(x.emoji||"＋")}</span><span>${x.name?esc(x.name):"Vacía"}</span><span>💎 ${x.price}${own.length?" · 🔒":""}</span></button>`; }).join("")}
+      <button class="slot" data-ns="${r}"><span class="im">＋</span><span>Nuevo hueco</span></button></div>`).join("");
+  const portadas=Object.entries(SUBJECTS).map(([k,S])=>{ const b=CEVA.banner(k);
+    return `<b>${S.icon} ${S.name}</b><div class="bannerprev">${b?`<img src="${b}" alt="">`:"Portada original"}</div><div class="row"><button class="btn" data-bn="${k}">📷 Cambiar imagen</button>${b?`<button class="btn" data-bd="${k}">Volver a la original</button>`:""}</div>`; }).join("");
+  const mini=`<label class="f">Precio de cada partida (gemas)<input type="number" min="0" max="999" id="mgCost" value="${c.mgCost}"></label>
+    <p class="hint">Perfecta: se devuelve todo. Casi perfecta: la mitad. Si falla mucho: nada.</p><button class="btn go" data-mg>Guardar precio</button>`;
+  const hid=new Set(c.factsHidden||[]);
+  const curios=`<p class="hint">Sale una distinta cada día encima de la colección.</p>
+    <label class="f">Título<input type="text" id="fT" maxlength="60" placeholder="Ej.: Los pulpos"></label>
+    <label class="f">Curiosidad<textarea id="fX" maxlength="300" placeholder="Escribe la curiosidad…"></textarea></label>
+    <button class="btn go" data-fa>＋ Añadir curiosidad</button>
+    ${(c.factsCustom||[]).length?`<b>Las tuyas</b><div class="list">${c.factsCustom.map(f=>`<div class="lrow"><b>${esc(f.t)}<br><small style="font-weight:700">${esc(f.x)}</small></b><button class="btn" data-fd="${f.id}">Quitar</button></div>`).join("")}</div>`:""}
+    <b>Incluidas (${FACTS.length}). Toca para ocultar o volver a mostrar.</b>
+    <div class="facts">${FACTS.map((f,i)=>`<div class="lrow${hid.has("b"+i)?" off":""}"><span style="flex:1"><b>${esc(f[0])}:</b> ${esc(f[1])}</span><button class="btn" data-fh="b${i}" style="padding:6px 10px">${hid.has("b"+i)?"Mostrar":"Ocultar"}</button></div>`).join("")}</div>`;
+  const premios=`<p class="hint">Juega a cualquier premio sin gastar nada ni tocar el progreso de nadie.</p><div class="row">${Premios.NAMES.map((n,i)=>`<button class="btn" data-pz="${i}">🎁 ${n}</button>`).join("")}</div>`;
+  const pass=`<label class="f">Nueva contraseña<input type="password" id="p1" inputmode="numeric" autocomplete="off"></label><label class="f">Repítela<input type="password" id="p2" inputmode="numeric" autocomplete="off"></label><button class="btn go" data-pw>Cambiar contraseña</button>`;
+  $("cfgBody").innerHTML=sec("perfiles","👤 Perfiles",prof)+sec("tienda","🛍️ Pegatinas de la tienda",tienda)+sec("portadas","🖼️ Portadas de las materias",portadas)+
+    sec("mini","🎮 Minijuegos",mini)+sec("curios","💡 Curiosidades",curios)+sec("premios","🎁 Probar los premios",premios)+sec("pass","🔒 Contraseña",pass);
+  const B=$("cfgBody");
+  B.querySelectorAll("details").forEach(d=>d.addEventListener("toggle",()=>{ if(d.open) openSec=d.dataset.sec; }));
+  B.querySelectorAll("[data-ep]").forEach(b=>b.onclick=()=>editProfile(b.dataset.ep));
+  B.querySelector("[data-np]").onclick=()=>editProfile(null);
+  B.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>editSticker(b.dataset.st));
+  B.querySelectorAll("[data-ns]").forEach(b=>b.onclick=()=>{ const s=shopGet(); const r=b.dataset.ns; const id=uid("st_"); s.push({id,rar:r,price:RARS.find(x=>x[0]===r)[1],name:"",img:null}); shopSet(s); editSticker(id); });
+  B.querySelectorAll("[data-bn]").forEach(b=>b.onclick=async()=>{ const d=await pickAndCrop({aspect:3,w:1080,h:360}); if(d){ STORE.set("banner_"+b.dataset.bn,d); openSec="portadas"; renderConfig(); toast("Portada cambiada"); } });
+  B.querySelectorAll("[data-bd]").forEach(b=>b.onclick=()=>{ STORE.del("banner_"+b.dataset.bd); openSec="portadas"; renderConfig(); });
+  B.querySelector("[data-mg]").onclick=()=>{ const v=Math.max(0,Math.min(999,parseInt($("mgCost").value,10)||0)); const c2=CEVA.cfg(); c2.mgCost=v; CEVA.setCfg(c2); toast(`Precio guardado: ${v} 💎`); };
+  B.querySelector("[data-fa]").onclick=()=>{ const t=$("fT").value.trim(), x=$("fX").value.trim(); if(!x){ toast("Escribe la curiosidad"); return; }
+    const c2=CEVA.cfg(); c2.factsCustom=[...(c2.factsCustom||[]),{id:uid("f_"),t:t||"Curiosidad",x}]; CEVA.setCfg(c2); openSec="curios"; renderConfig(); toast("Curiosidad añadida"); };
+  B.querySelectorAll("[data-fd]").forEach(b=>b.onclick=()=>{ const c2=CEVA.cfg(); c2.factsCustom=(c2.factsCustom||[]).filter(f=>f.id!==b.dataset.fd); CEVA.setCfg(c2); openSec="curios"; renderConfig(); });
+  B.querySelectorAll("[data-fh]").forEach(b=>b.onclick=()=>{ const c2=CEVA.cfg(), h=new Set(c2.factsHidden||[]), id=b.dataset.fh; h.has(id)?h.delete(id):h.add(id); c2.factsHidden=[...h]; CEVA.setCfg(c2); openSec="curios"; renderConfig(); });
+  B.querySelectorAll("[data-pz]").forEach(b=>b.onclick=()=>Premios.start(+b.dataset.pz,()=>{}));
+  B.querySelector("[data-pw]").onclick=()=>{ const a=$("p1").value, b2=$("p2").value; if(a.length<4){ toast("Pon al menos 4 caracteres"); return; } if(a!==b2){ toast("No coinciden"); return; }
+    const c2=CEVA.cfg(); c2.pass=a; CEVA.setCfg(c2); $("p1").value=$("p2").value=""; toast("Contraseña cambiada"); };
+  show("config");
+}
+
+/* ---------- editar perfil ---------- */
+function editProfile(id){
+  const isNew=!id;
+  const base=id?CEVA.profiles().find(p=>p.id===id):{id:uid("p"),name:"",avatar:"🐱",color:COLORS[2],subjects:[]};
+  const d=JSON.parse(JSON.stringify(base));
+  function render(){
+    $("editBody").innerHTML=`<h2>${isNew?"Nuevo perfil":"Editar perfil"}</h2>
+      <label class="f">Nombre<input type="text" id="eName" maxlength="20" autocomplete="off" value="${esc(d.name)}"></label>
+      <div class="f">Foto<div class="row"><span class="ava" style="width:76px;height:76px;font-size:2.4rem;background:${d.color}">${d.photo?`<img class="ph" src="${d.photo}" alt="">`:d.avatar}</span>
+        <button class="btn" data-ph>📷 ${d.photo?"Cambiar foto":"Elegir foto"}</button>${d.photo?`<button class="btn" data-nph>Quitar foto</button>`:""}</div>
+        <p class="hint">Al elegirla podrás moverla y hacer zoom para centrarla.</p></div>
+      <div class="f">Dibujo (si no hay foto)<div class="pickgrid">${AVATARS.map(a=>`<button class="pick${d.avatar===a?" sel":""}" data-a="${a}">${a}</button>`).join("")}</div></div>
+      <div class="f">Color<div class="pickgrid">${COLORS.map(c=>`<button class="sw${d.color===c?" sel":""}" data-c="${c}" style="background:${c}" aria-label="color"></button>`).join("")}</div></div>
+      <div class="f">Materias<div class="list">${Object.entries(SUBJECTS).map(([k,S])=>`<button class="toggle${d.subjects.includes(k)?" on":""}" data-s="${k}"><span class="box">${d.subjects.includes(k)?"✓":""}</span><span>${S.icon} ${S.name}<br><small style="font-weight:700;opacity:.75">${S.sub}</small></span></button>`).join("")}</div></div>
+      ${isNew?"":`<div class="f">Progreso<p class="hint">Borra estrellas, desbloqueos, gemas ganadas y récords de una materia para empezar de cero.</p><div class="row">${Object.entries(SUBJECTS).map(([k,S])=>`<button class="btn" data-r="${k}">Reiniciar ${S.name}</button>`).join("")}</div></div>`}
+      <div class="row between" style="margin-top:6px">${!isNew&&CEVA.profiles().length>1?`<button class="btn danger" data-del>Eliminar perfil</button>`:"<span></span>"}
+        <div class="row"><button class="btn" data-cancel>Cancelar</button><button class="btn go" data-save>Guardar</button></div></div>`;
+    const E=$("editBody"), keep=()=>{ d.name=$("eName").value; };
+    E.querySelector("[data-ph]").onclick=async()=>{ keep(); const img=await pickAndCrop({aspect:1,w:256,h:256,round:true}); if(img){ d.photo=img; render(); } };
+    const np=E.querySelector("[data-nph]"); if(np) np.onclick=()=>{ keep(); delete d.photo; render(); };
+    E.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{ keep(); d.avatar=b.dataset.a; render(); });
+    E.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{ keep(); d.color=b.dataset.c; render(); });
+    E.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{ keep(); const k=b.dataset.s; d.subjects=d.subjects.includes(k)?d.subjects.filter(x=>x!==k):[...d.subjects,k]; render(); });
+    E.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ const S=SUBJECTS[b.dataset.r]; if(confirm(`¿Borrar todo el progreso de ${S.name} de ${d.name||"este perfil"}?`)){ STORE.del(S.key+d.id); b.textContent="Reiniciado ✓"; } });
+    const del=E.querySelector("[data-del]"); if(del) del.onclick=()=>{ if(!confirm(`¿Eliminar el perfil de ${d.name}? Se borrará su progreso y su colección.`)) return;
+      Object.values(SUBJECTS).forEach(S=>STORE.del(S.key+d.id)); CEVA.setProfiles(CEVA.profiles().filter(p=>p.id!==d.id)); openSec="perfiles"; renderConfig(); };
+    E.querySelector("[data-cancel]").onclick=()=>{ openSec="perfiles"; renderConfig(); };
+    E.querySelector("[data-save]").onclick=()=>{ keep(); d.name=d.name.trim(); if(!d.name){ toast("Pon un nombre"); return; }
+      const ps=CEVA.profiles(); if(isNew) ps.push(d); else { const i=ps.findIndex(p=>p.id===d.id); const cur=ps[i]; ps[i]=Object.assign({},cur,{name:d.name,photo:d.photo,avatar:d.avatar,color:d.color,subjects:d.subjects}); if(!d.photo) delete ps[i].photo; }
+      CEVA.setProfiles(ps); openSec="perfiles"; renderConfig(); toast("Perfil guardado"); };
+  }
+  render(); show("edit");
+}
+
+/* ---------- editar pegatina ---------- */
+function editSticker(id){
+  const it=shopGet().find(x=>x.id===id); if(!it) return renderConfig();
+  const own=ownersOf(id), locked=own.length>0;
+  const d=Object.assign({},it);
+  function render(){
+    $("seditBody").innerHTML=`<h2>Pegatina</h2>
+      ${locked?`<p class="hint" style="color:#C62839;font-weight:900">🔒 Ya está en la colección de ${esc(own.join(", "))}. No se puede editar ni borrar.</p>`:""}
+      <div class="row"><span class="ava" style="border-radius:16px;width:110px;height:110px;background:#fff">${d.img?`<img src="${d.img}" alt="" style="width:100%;height:100%;object-fit:contain">`:(d.emoji||"🖼️")}</span>
+        ${locked?"":`<button class="btn" data-im>📷 ${d.img?"Cambiar imagen":"Elegir imagen"}</button>`}</div>
+      <label class="f">Nombre<input type="text" id="sName" maxlength="24" value="${esc(d.name)}" ${locked?"disabled":""} placeholder="Ej.: Nuestro perro"></label>
+      <div class="f">Tipo<div class="row">${RARS.map(([r])=>`<button class="btn${d.rar===r?" go":""}" data-r="${r}" ${locked?"disabled":""}>${r}</button>`).join("")}</div></div>
+      <label class="f">Precio (gemas)<input type="number" id="sPrice" min="0" max="9999" value="${d.price}" ${locked?"disabled":""}></label>
+      <div class="row between" style="margin-top:6px">${locked?"<span></span>":`<button class="btn danger" data-del>Eliminar hueco</button>`}
+        <div class="row"><button class="btn" data-cancel>${locked?"Volver":"Cancelar"}</button>${locked?"":`<button class="btn go" data-save>Guardar</button>`}</div></div>`;
+    const E=$("seditBody"), keep=()=>{ if(locked) return; d.name=$("sName").value; d.price=Math.max(0,parseInt($("sPrice").value,10)||0); };
+    const im=E.querySelector("[data-im]"); if(im) im.onclick=async()=>{ keep(); const x=await pickAndCrop({aspect:1,w:192,h:192,type:"image/webp"}); if(x){ d.img=x; render(); } };
+    E.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ keep(); const prevDef=RARS.find(x=>x[0]===d.rar)[1]; d.rar=b.dataset.r; if(d.price===prevDef) d.price=RARS.find(x=>x[0]===d.rar)[1]; render(); });
+    const del=E.querySelector("[data-del]"); if(del) del.onclick=()=>{ if(!confirm("¿Eliminar este hueco de la tienda?")) return; shopSet(shopGet().filter(x=>x.id!==id)); openSec="tienda"; renderConfig(); };
+    E.querySelector("[data-cancel]").onclick=()=>{ openSec="tienda"; renderConfig(); };
+    const sv=E.querySelector("[data-save]"); if(sv) sv.onclick=()=>{ keep(); d.name=d.name.trim();
+      if((d.img||d.emoji)&&!d.name){ toast("Ponle un nombre"); return; }
+      if(ownersOf(id).length){ toast("Alguien acaba de comprarla: ya no se puede editar"); return; }
+      const s=shopGet(), i=s.findIndex(x=>x.id===id); s[i]={id,rar:d.rar,price:d.price,name:d.name,img:d.img||null}; if(!d.img&&d.emoji) s[i].emoji=d.emoji; shopSet(s); openSec="tienda"; renderConfig(); toast("Pegatina guardada"); };
+  }
+  render(); show("sedit");
+}
+
+/* ---------- arranque ---------- */
+const startP=new URLSearchParams(location.search).get("p");
+if(startP&&CEVA.profiles().some(p=>p.id===startP)) openProfile(startP); else renderHome();
+</script>
+</body>
+</html>

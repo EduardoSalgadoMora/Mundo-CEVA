@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de Mundo CEVA</title>
+<link rel="icon" type="image/png" href="icono.png">
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+:root{--ink:#1E1E1E;--soft:#3E4A55;--edge:#1B1B1B;--panel:#F3F0E8;--grass:#5BA33B}
+*{box-sizing:border-box}
+html{background:#BFE6FA}
+body{margin:0;color:var(--ink);font:500 15px/1.6 "Nunito",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 18px 40px;background:#fff;min-height:100vh}
+.bar{display:flex;gap:10px;justify-content:space-between;margin-bottom:18px}
+.bar button,.bar a{font:inherit;font-weight:900;font-size:1rem;padding:10px 14px;background:#C6C6C6;color:var(--ink);border:3px solid var(--edge);cursor:pointer;text-decoration:none;
+  box-shadow:inset -4px -4px 0 rgba(0,0,0,.3),inset 4px 4px 0 rgba(255,255,255,.3)}
+.bar .go{background:var(--grass);color:#fff}
+header{display:flex;align-items:center;gap:16px;padding-bottom:14px;border-bottom:4px solid var(--edge)}
+header img{width:72px;height:72px;border:3px solid var(--edge)}
+h1,h2{font-family:"Press Start 2P",monospace;font-weight:400;letter-spacing:.02em;line-height:1.45}
+h1{font-size:1.35rem;margin:0}
+header p{margin:4px 0 0;color:var(--soft);font-weight:800}
+h2{font-size:.95rem;margin:30px 0 10px;padding:10px 12px;background:var(--panel);border:3px solid var(--edge);
+  box-shadow:inset -4px -4px 0 rgba(0,0,0,.1),inset 4px 4px 0 rgba(255,255,255,.4);break-after:avoid}
+h3{font-size:1.05rem;font-weight:900;margin:16px 0 4px;break-after:avoid}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.tip{border-left:6px solid var(--grass);background:#EEF7E8;padding:8px 12px;margin:10px 0}
+.warn{border-left:6px solid #D4322C;background:#FCEDEC;padding:8px 12px;margin:10px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.95rem}
+th,td{border:2px solid var(--edge);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--panel)}
+section{break-inside:auto}
+.tip,.warn,table,li{break-inside:avoid}
+footer{margin-top:32px;padding-top:12px;border-top:3px solid var(--edge);color:var(--soft);font-size:.9rem;text-align:center}
+@media print{
+  html{background:#fff}
+  main{max-width:none;padding:0;min-height:0}
+  .bar{display:none}
+  @page{size:A4;margin:16mm 15mm}
+}
+</style>
+</head>
+<body>
+<main>
+<div class="bar"><a href="index.html" id="volver">⟵ Volver</a><button class="go" id="imprimir">🖨️ Imprimir / PDF</button></div>
+
+<header>
+  <img src="icono.png" alt="">
+  <div><h1>Manual de Mundo CEVA</h1><p>Guía para familias · web y app Android (NO oficial)</p></div>
+</header>
+
+<section>
+<h2>1. ¿Qué es Mundo CEVA?</h2>
+<p>Mundo CEVA es un juego para repasar en casa lo que se estudia en Primaria. Cada niño o niña tiene su perfil, elige una materia y va superando bloques de preguntas. Con lo que acierta gana <b>estrellas ⭐</b> y <b>gemas 💎</b>, que luego puede gastar en pegatinas y minijuegos.</p>
+<p>No es una web oficial. El temario se ha sacado de libros y cuadernos de estudio, así que puede tener algún error.</p>
+</section>
+
+<section>
+<h2>2. Web o app Android</h2>
+<table>
+  <tr><th></th><th>Web</th><th>App Android</th></tr>
+  <tr><td><b>Dónde</b></td><td>En el navegador, sin instalar nada.</td><td>Se instala en el móvil o la tablet con el archivo <i>Mundo-CEVA.apk</i>.</td></tr>
+  <tr><td><b>Progreso</b></td><td>Es una versión de prueba: <b>se borra al cerrar la pestaña</b>.</td><td><b>Se guarda</b> en el dispositivo.</td></tr>
+  <tr><td><b>Internet</b></td><td>Hace falta para abrirla.</td><td>No la necesita: funciona sin conexión y no se conecta a nada.</td></tr>
+</table>
+<h3>Instalar la app</h3>
+<ol>
+  <li>En la web, toca <b>«Descarga la app NO oficial en Android»</b> (en el aviso de arriba).</li>
+  <li>Abre el archivo descargado. Android avisará de que viene de un <b>origen desconocido</b>: es normal en las apps que no están en la Play Store. Permite la instalación para esa vez.</li>
+  <li>Si sale una versión nueva, instálala encima: <b>no se pierde el progreso</b>.</li>
+</ol>
+<p>La versión que tienes aparece abajo del todo en la pantalla de inicio.</p>
+</section>
+
+<section>
+<h2>3. Empezar a jugar</h2>
+<ol>
+  <li>En la pantalla de inicio, toca el perfil de quien va a jugar.</li>
+  <li>Verás sus materias, sus gemas 💎 (arriba a la derecha), la tienda de pegatinas, la curiosidad del día y su colección.</li>
+  <li>Toca una materia para entrar. Con <b>«⟵ Perfiles»</b> vuelves al inicio.</li>
+</ol>
+<p>De serie vienen dos perfiles de ejemplo: <b>2º Primaria</b> (Inglés y Science) y <b>4º Primaria</b> (Lengua y Mates). Se pueden cambiar en la zona de adultos.</p>
+</section>
+
+<section>
+<h2>4. Las materias</h2>
+<table>
+  <tr><th>Materia</th><th>Qué se repasa</th></tr>
+  <tr><td>⛏️ <b>Lengua</b></td><td>Examen de Lengua: ¡A por todas! (orden alfabético y más temas).</td></tr>
+  <tr><td>✖️ <b>Mates</b></td><td>Multiplicaciones de dos cifras: «La cueva profunda».</td></tr>
+  <tr><td>🌺 <b>Inglés</b></td><td>Lulu’s English Island · Unit 1.</td></tr>
+  <tr><td>🌻 <b>Science</b></td><td>Sunny’s Plant Garden · Unit 1 · Plants.</td></tr>
+</table>
+<h3>Cómo funciona cada materia</h3>
+<ul>
+  <li>La materia está dividida en <b>bloques</b>. Al principio solo está abierto el primero; para abrir el siguiente hay que sacar al menos <b>1 estrella</b> en el anterior.</li>
+  <li>Cada bloque da de 1 a 3 estrellas según los fallos, y <b>cada estrella es una gema</b> (⭐⭐⭐ = 3 💎).</li>
+  <li>Si se hacen <b>todos los bloques sin ningún fallo</b>, se gana un rato de <b>juego de premio</b> (bloques que caen, salta obstáculos, rompe ladrillos, une tres o moto de colinas).</li>
+  <li>En Inglés y Science, el botón 🔊 lee la palabra o la frase en voz alta.</li>
+  <li>En Mates, el botón <b>«Cómo se hacen»</b> explica paso a paso las multiplicaciones. Conviene verlo antes de empezar.</li>
+</ul>
+</section>
+
+<section>
+<h2>5. Teoría y fichas para imprimir</h2>
+<p>En <b>Lengua, Inglés y Science</b> hay dos botones encima de los bloques:</p>
+<ul>
+  <li><b>📖 Aprende la teoría</b>: explicación de cada tema para leer antes de jugar.</li>
+  <li><b>🖨️ Fichas para imprimir</b>: eliges los temas y cuántos ejercicios de cada uno, y se crea una ficha distinta cada vez, con las soluciones en otra página. Con <b>«🔄 Otra»</b> sale una nueva y con <b>«🖨️ Imprimir / PDF»</b> la imprimes o la guardas como PDF.</li>
+</ul>
+</section>
+
+<section>
+<h2>6. Minijuegos</h2>
+<p>En <b>Lengua, Inglés y Science</b> también hay minijuegos de repaso (por ejemplo, adivina la palabra, parejas, sopa de letras, contrarreloj, dictado o atrapa palabras).</p>
+<ul>
+  <li>Cada partida <b>cuesta gemas</b> (10 de serie; se cambia en la zona de adultos).</li>
+  <li>Si la partida sale <b>perfecta</b>, se devuelven todas las gemas; si es <b>casi perfecta</b>, la mitad; si hay muchos fallos, ninguna.</li>
+  <li>Se van desbloqueando con las gemas ganadas en total.</li>
+</ul>
+</section>
+
+<section>
+<h2>7. Tienda de pegatinas y colección</h2>
+<ul>
+  <li>Desde el perfil, toca <b>«🛍️ Tienda de pegatinas»</b>. Hay pegatinas comunes, raras, épicas y legendarias, cada una con su precio en gemas.</li>
+  <li>Las que se compran pasan a <b>«Mi colección»</b>.</li>
+  <li>Si en la tienda tocas una pegatina que ya tienes, te la <b>pones en el perfil</b> (sale junto a tu dibujo).</li>
+  <li>Cada día aparece una <b>curiosidad</b> distinta («¿Sabías que…?»).</li>
+</ul>
+</section>
+
+<section>
+<h2>8. Zona de adultos ⚙️</h2>
+<p>El botón ⚙️ de la pantalla de inicio abre la configuración. Pide una contraseña: <b>de serie es 1234</b>.</p>
+<div class="warn"><b>Cambia la contraseña cuanto antes</b> (sección «🔒 Contraseña»). L@s peques descubren con facilidad la contraseña y lo siguen intentando: en la ventana de la contraseña se ve cuántos <b>intentos fallidos</b> lleva ese dispositivo.</div>
+<table>
+  <tr><th>Sección</th><th>Para qué sirve</th></tr>
+  <tr><td>👤 Perfiles</td><td>Añadir, editar o eliminar perfiles: nombre, dibujo o foto, color y materias de cada uno. También se puede borrar el progreso de una materia.</td></tr>
+  <tr><td>🛍️ Pegatinas de la tienda</td><td>Rellenar los huecos de la tienda con imágenes tuyas, nombre y precio. Los huecos vacíos no salen en la tienda. Una pegatina que ya tiene alguien no se puede editar.</td></tr>
+  <tr><td>🖼️ Portadas de las materias</td><td>Poner una imagen propia como portada de cada materia, o volver a la original.</td></tr>
+  <tr><td>🎮 Minijuegos</td><td>Cambiar cuántas gemas cuesta cada partida.</td></tr>
+  <tr><td>💡 Curiosidades</td><td>Añadir curiosidades propias y ocultar o volver a mostrar las que vienen incluidas.</td></tr>
+  <tr><td>🎁 Probar los premios</td><td>Jugar a cualquier juego de premio sin gastar nada ni tocar el progreso de nadie.</td></tr>
+  <tr><td>🔒 Contraseña</td><td>Cambiar la contraseña (mínimo 4 caracteres, escrita dos veces).</td></tr>
+</table>
+</section>
+
+<section>
+<h2>9. Preguntas frecuentes</h2>
+<h3>He cerrado la web y se ha borrado todo</h3>
+<p>Es normal: la web es una versión de prueba. Para guardar el progreso, instala la app Android.</p>
+<h3>El aviso de arriba de la web me molesta</h3>
+<p>Tócale la <b>×</b> de la derecha y se cierra.</p>
+<h3>No veo los cambios nuevos de la web</h3>
+<p>Recarga la página (en el ordenador, Ctrl + F5).</p>
+<h3>La voz no lee en inglés en la app</h3>
+<p>Revisa en los ajustes del móvil que el motor de «Texto a voz» tiene instalada la voz en inglés.</p>
+</section>
+
+<section>
+<h2>10. Contacto</h2>
+<p>Esta web se ha desarrollado mediante <i>vibecoding</i>. Cualquier aportación vendrá genial: escribe a <b>mundocevaprimaria@gmail.com</b>.</p>
+<p>Cero responsabilidades, que ya tengo bastante en casa 🙂</p>
+</section>
+
+<footer>Manual de Mundo CEVA · versión <span id="ver">2.4</span></footer>
+</main>
+<script>
+document.getElementById("imprimir").onclick=function(){
+  try{ if(window.Android&&Android.print){ Android.print("Manual de Mundo CEVA"); return; } }catch(e){}
+  window.print();
+};
+</script>
+</body>
+</html>

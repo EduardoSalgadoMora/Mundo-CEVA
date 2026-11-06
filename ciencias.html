@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sunny’s Plant Garden · Science</title>
+<link rel="icon" type="image/png" href="icono.png">
+<link rel="apple-touch-icon" href="icono.png">
+<link href="fonts/fonts.css" rel="stylesheet">
+<script src="minijuegos.js"></script>
+<script src="premios.js"></script>
+<script src="extras.js"></script>
+<script src="ceva.js"></script>
+
+<style>
+:root{
+  --sea1:#B5E39A; --sea2:#F1FBE8; --ink:#17324D; --soft:#41596F;
+  --card:#FFFFFF; --cardInk:#17324D; --btn:#FFF4E2; --line:#17324D;
+  --accent:#F27A1A; --leaf:#3FA36B; --sun:#FFD23F; --ok:#2E9E5B; --bad:#E0444E;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --sea1:#1F3D22; --sea2:#0E1C10; --ink:#EAF6F8; --soft:#A9C3CF;
+    --card:#15303F; --cardInk:#EAF6F8; --btn:#1E4256; --line:#7FB3C4;
+    --ok:#46C27A; --bad:#FF6B73; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --sea1:#1F3D22; --sea2:#0E1C10; --ink:#EAF6F8; --soft:#A9C3CF;
+  --card:#15303F; --cardInk:#EAF6F8; --btn:#1E4256; --line:#7FB3C4;
+  --ok:#46C27A; --bad:#FF6B73; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;color:var(--ink);font-family:"Nunito",system-ui,sans-serif;
+  background:linear-gradient(to bottom,var(--sky) 0,var(--sea1) 34%,var(--sea2) 80%);display:flex;flex-direction:column}
+.sand{margin-top:auto;height:40px;flex:none;background:#8D5A2B;border-top:6px solid #5FAE4E;
+  background-image:radial-gradient(circle at 20% 40%,#6E431E 2px,transparent 3px),radial-gradient(circle at 70% 60%,#6E431E 2px,transparent 3px);background-size:60px 40px}
+main{width:100%;max-width:760px;margin:0 auto;padding:18px 16px 28px;display:flex;flex-direction:column;gap:16px}
+h1{font-family:"Baloo 2","Nunito",sans-serif;font-weight:800;font-size:clamp(1.7rem,6.5vw,2.5rem);line-height:1;margin:0}
+.top{display:flex;align-items:center;gap:12px}
+.top .mascot{width:76px;flex:none}
+.top .sub{margin:4px 0 0;color:var(--soft);font-weight:800}
+.stats{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.pill{background:var(--card);color:var(--cardInk);border:3px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:900;white-space:nowrap}
+.album{background:var(--card);color:var(--cardInk);border:3px solid var(--line);border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.album .row{display:flex;flex-wrap:wrap;gap:6px;font-size:1.7rem;line-height:1}
+.album .row span{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--btn)}
+.album .row span.lock{font-size:1rem;opacity:.5}
+.album p{margin:0;font-weight:800;color:var(--soft);font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.card{display:flex;align-items:center;gap:12px;text-align:left;padding:12px;background:var(--card);color:var(--cardInk);
+  border:3px solid var(--line);border-radius:20px;box-shadow:0 5px 0 var(--line);cursor:pointer;font:inherit}
+.card:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.card .ic{width:52px;height:52px;flex:none;border-radius:16px;display:grid;place-items:center;font-size:1.8rem;background:var(--btn);border:3px solid var(--line)}
+.card b{display:block;font-size:1.08rem}
+.card small{display:block;opacity:.75;font-size:.88rem}
+.card .st{color:#E0A100;letter-spacing:2px;font-size:1rem}
+.card.locked{opacity:.55;cursor:default}
+button:focus-visible,.card:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+
+.bar{display:flex;align-items:center;gap:10px}
+.btn{font:inherit;font-weight:900;font-size:1.08rem;padding:12px 14px;border-radius:16px;border:3px solid var(--line);
+  background:var(--btn);color:var(--cardInk);box-shadow:0 4px 0 var(--line);cursor:pointer;touch-action:manipulation}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.small{font-size:.92rem;padding:8px 12px}
+.btn.go{background:var(--accent);color:#fff}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.bad{background:var(--bad);color:#fff}
+.btn.sel{outline:4px solid var(--sun);outline-offset:2px}
+.btn:disabled{cursor:default}
+.progress{flex:1;height:16px;border-radius:99px;border:3px solid var(--line);background:var(--card);overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.panel{background:var(--card);color:var(--cardInk);border:3px solid var(--line);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.qhead{display:flex;align-items:center;gap:10px}
+.qlabel{font-weight:900;font-size:1.15rem;margin:0;flex:1}
+.speak{width:48px;height:48px;padding:0;font-size:1.4rem;flex:none}
+.display{display:flex;flex-direction:column;align-items:center;gap:10px}
+.big{font-size:clamp(3rem,16vw,5rem);line-height:1.1;text-align:center}
+.sentence{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:clamp(1.4rem,6vw,2rem);text-align:center;line-height:1.2}
+.pic{background:#FFF8EC;border-radius:16px;border:3px solid var(--line);padding:6px;display:block}
+.pic svg{display:block;width:100%;height:auto}
+.solo{width:min(190px,52vw)}
+.scene{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:8px;width:100%;max-width:460px}
+.scene.colour{grid-template-columns:1fr 1fr;max-width:360px}
+.scene .pic{cursor:default}
+.scene.colour .pic{cursor:pointer}
+.tag{font-weight:900;background:var(--sun);color:#17324D;border:3px solid var(--line);border-radius:99px;padding:2px 12px}
+.who{display:flex;align-items:center;gap:12px}
+.who .kid{font-size:3.2rem;line-height:1;text-align:center}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.one{grid-template-columns:1fr}
+.opts.pics .btn{padding:6px}
+.opts.pics .btn svg{width:100%;height:auto;display:block}
+.feedback{font-size:1.08rem;line-height:1.5;min-height:1.5em}
+.feedback b.y{color:var(--ok)} .feedback b.n{color:var(--bad)}
+.palette{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.sw{width:46px;height:46px;border-radius:50%;border:3px solid var(--line);cursor:pointer;padding:0;box-shadow:0 3px 0 var(--line)}
+.sw.sel{outline:4px solid var(--sun);outline-offset:3px}
+.sw.rainbow{background:conic-gradient(red,orange,yellow,lime,cyan,blue,violet,red)}
+.tools{display:flex;flex-direction:column;gap:10px}
+.tools .rowb{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.stamp{font-size:1.6rem;width:50px;height:50px;padding:0}
+#dc{width:100%;max-width:560px;aspect-ratio:3/2;height:auto;background:#fff;border:3px solid var(--line);border-radius:16px;touch-action:none;display:block}
+.slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.slot{width:44px;height:52px;border-bottom:4px solid var(--line);display:grid;place-items:end center;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:2rem;line-height:1.2}
+.letters{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.letters .btn{width:54px;height:54px;padding:0;font-size:1.5rem;font-family:"Baloo 2",sans-serif}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.result{text-align:center;align-items:center}
+.result .stars{font-size:2.6rem;color:#E0A100;letter-spacing:6px}
+.result .score{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:2.4rem;line-height:1}
+.unlock{background:var(--btn);border:3px dashed var(--accent);border-radius:16px;padding:10px 14px;font-weight:900}
+.tip{margin:0;line-height:1.5;opacity:.85}
+#cv{width:min(250px,64vw);height:auto;border:3px solid var(--line);border-radius:12px;background:#0E2A3A;touch-action:none;display:block}
+.rbar{display:flex;justify-content:space-between;width:100%;max-width:340px;font-weight:900}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:340px}
+.pad .btn{font-size:1.3rem;padding:12px 0;user-select:none;-webkit-user-select:none}
+:root{--sky:#BFE6FF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sky:#3B2350}}
+:root[data-theme="dark"]{--sky:#3B2350}
+.sand{position:relative}
+.sand::before{display:none;content:"";position:absolute;left:0;right:0;top:-18px;height:18px;
+  background:radial-gradient(circle at 15px 0,transparent 12px,#FFFFFF 13px,#FFFFFF 15px,transparent 16px);background-size:30px 18px;opacity:.7}
+.hero{background:linear-gradient(#CDEBFF,#D7F2C2);border:3px solid var(--line);border-radius:24px;overflow:hidden;margin-bottom:14px}
+.hero svg{display:block;width:100%;height:auto}
+.homebtn{align-self:flex-start;display:inline-block;font:inherit;font-weight:900;font-size:.95rem;padding:8px 14px;border-radius:999px;border:3px solid #17324D;background:#fff;color:#17324D;text-decoration:none;box-shadow:0 3px 0 #17324D}
+[hidden]{display:none!important}
+@media (max-width:430px){ .opts:not(.pics){grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){.shake{animation:none}.progress span{transition:none}}
+.partwrap{width:min(330px,86vw)}
+.partwrap svg{display:block;width:100%;height:auto;background:#FFFDF6;border:3px solid var(--line);border-radius:18px}
+.partsvg [data-o]{cursor:pointer}
+.partsvg .hit{filter:drop-shadow(0 0 5px #FFD23F) drop-shadow(0 0 3px #FFD23F)}
+.partsvg .miss{opacity:.45;transition:opacity .2s}
+.found{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:30px}
+.opts .btn svg{max-height:110px}
+</style>
+</head>
+<body>
+<main>
+<a class="homebtn" href="index.html">⟵ Inicio</a>
+  <header class="top">
+    <svg class="mascot" viewBox="0 0 120 100" aria-hidden="true">
+      <path d="M60 96V58" stroke="#2E7D32" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="42" cy="78" rx="14" ry="7" transform="rotate(-25 42 78)" fill="#43A047" stroke="#17324D" stroke-width="3"/>
+      <ellipse cx="78" cy="74" rx="14" ry="7" transform="rotate(25 78 74)" fill="#43A047" stroke="#17324D" stroke-width="3"/>
+      <g stroke="#17324D" stroke-width="3"><ellipse cx="86.0" cy="36.0" rx="14" ry="9" transform="rotate(0 86.0 36.0)" fill="#FFC107"/><ellipse cx="78.4" cy="54.4" rx="14" ry="9" transform="rotate(45 78.4 54.4)" fill="#FFC107"/><ellipse cx="60.0" cy="62.0" rx="14" ry="9" transform="rotate(90 60.0 62.0)" fill="#FFC107"/><ellipse cx="41.6" cy="54.4" rx="14" ry="9" transform="rotate(135 41.6 54.4)" fill="#FFC107"/><ellipse cx="34.0" cy="36.0" rx="14" ry="9" transform="rotate(180 34.0 36.0)" fill="#FFC107"/><ellipse cx="41.6" cy="17.6" rx="14" ry="9" transform="rotate(225 41.6 17.6)" fill="#FFC107"/><ellipse cx="60.0" cy="10.0" rx="14" ry="9" transform="rotate(270 60.0 10.0)" fill="#FFC107"/><ellipse cx="78.4" cy="17.6" rx="14" ry="9" transform="rotate(315 78.4 17.6)" fill="#FFC107"/></g>
+      <circle cx="60" cy="36" r="20" fill="#8D5A2B" stroke="#17324D" stroke-width="3"/>
+      <circle cx="53" cy="33" r="3.5" fill="#17324D"/><circle cx="67" cy="33" r="3.5" fill="#17324D"/>
+      <path d="M52 42q8 7 16 0" fill="none" stroke="#17324D" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="47" cy="41" r="3" fill="#FF8AA8"/><circle cx="73" cy="41" r="3" fill="#FF8AA8"/>
+    </svg>
+    <div>
+      <h1>Sunny’s Plant Garden</h1>
+      <p class="sub">Science · Unit 1 · Plants</p>
+    </div>
+    <div class="stats">
+      <span class="pill" id="starTotal">⭐ 0/27</span>
+      <span class="pill" id="gemTotal">💎 0</span>
+    </div>
+  </header>
+
+  <!-- MAPA -->
+  <section id="menu">
+    <div class="hero" aria-hidden="true">
+      <svg viewBox="0 0 360 120">
+        <circle cx="310" cy="30" r="18" fill="#FFD23F"/>
+        <circle cx="200" cy="22" r="8" fill="#fff" opacity=".85"/><circle cx="212" cy="16" r="10" fill="#fff" opacity=".85"/><circle cx="224" cy="22" r="8" fill="#fff" opacity=".85"/>
+        <path d="M0 96Q90 82 180 94T360 90V120H0Z" fill="#7CC36E"/>
+        <rect x="0" y="104" width="360" height="16" fill="#8D5A2B"/>
+        <rect x="64" y="56" width="12" height="44" fill="#8D5A2B" stroke="#17324D" stroke-width="3"/>
+        <circle cx="54" cy="56" r="18" fill="#43A047" stroke="#17324D" stroke-width="3"/><circle cx="86" cy="56" r="18" fill="#43A047" stroke="#17324D" stroke-width="3"/><circle cx="70" cy="40" r="24" fill="#43A047" stroke="#17324D" stroke-width="3"/>
+        <circle cx="62" cy="40" r="4" fill="#E53935"/><circle cx="80" cy="50" r="4" fill="#E53935"/><circle cx="52" cy="58" r="4" fill="#E53935"/>
+        <path d="M148 100L170 58H176L198 100Z" fill="#1B5E20" stroke="#17324D" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M152 84L173 44L194 84Z" fill="#2E7D32" stroke="#17324D" stroke-width="3" stroke-linejoin="round"/>
+        <g stroke="#17324D" stroke-width="2"><path d="M240 102V72" stroke="#2E7D32" stroke-width="4"/><circle cx="240" cy="66" r="9" fill="#FFC107"/><circle cx="240" cy="66" r="4" fill="#8D5A2B"/>
+        <path d="M262 102V80" stroke="#2E7D32" stroke-width="4"/><path d="M254 72L258 86H266L270 72L265 77L262 70L259 77Z" fill="#E8457A"/>
+        <path d="M284 102V76" stroke="#2E7D32" stroke-width="4"/><circle cx="284" cy="70" r="8" fill="#fff"/><circle cx="284" cy="70" r="3" fill="#FFD23F"/></g>
+        <path d="M320 100Q312 80 322 66Q330 80 324 100Z M326 100Q336 84 346 80Q342 94 330 100Z" fill="#66BB6A" stroke="#17324D" stroke-width="2"/>
+        <text x="16" y="28" font-family="'Baloo 2',Nunito,sans-serif" font-weight="800" font-size="26" fill="#F27A1A" stroke="#17324D" stroke-width="1">Let’s grow!</text>
+      </svg>
+    </div>
+    <div class="album">
+      <p id="nextUnlock"></p>
+      <div class="row" id="stickers"></div>
+      <p id="prizeProg"></p>
+    </div>
+    <div id="exBtns"></div>
+    <div class="grid" id="cards" style="margin-top:14px"></div>
+    <div id="mgCards"></div>
+  </section>
+
+  <!-- JUEGO -->
+  <section id="play" hidden>
+    <div class="bar">
+      <button class="btn small" id="quit">Salir</button>
+      <div class="progress"><span id="prog"></span></div>
+      <span id="count" style="font-weight:900">1/8</span>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="qhead">
+        <p class="qlabel" id="qLabel"></p>
+        <button class="btn speak" id="speakBtn" aria-label="Escuchar" hidden>🔊</button>
+      </div>
+      <div class="display" id="disp"></div>
+      <div id="opts"></div>
+      <div class="feedback" id="fb" aria-live="polite"></div>
+      <button class="btn go" id="next" hidden>Next ➜</button>
+    </div>
+  </section>
+
+  <!-- RESULTADO -->
+  <section id="result" hidden>
+    <div class="panel result">
+      <div class="stars" id="rStars"></div>
+      <div class="score" id="rScore"></div>
+      <p id="rMsg" style="margin:0;font-size:1.15rem;font-weight:900"></p>
+      <div class="unlock" id="rUnlock" hidden></div>
+      <p class="tip" id="rTip"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <button class="btn go" id="prize" hidden>Jugar al premio</button>
+        <button class="btn go" id="again">Jugar otra vez</button>
+        <button class="btn" id="toMenu">Volver al jardín</button>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="sand" aria-hidden="true"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick = (a,n) => shuffle(a).slice(0,n);
+
+/* ---------- VOZ ---------- */
+const NATIVE_TTS=!!(window.Android&&Android.speak);
+const canSpeak = NATIVE_TTS || "speechSynthesis" in window;
+function speak(t){
+  if(!canSpeak) return;
+  if(NATIVE_TTS){ try{Android.speak(t);}catch(e){} return; }
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t), vs=speechSynthesis.getVoices();
+    u.lang="en-GB"; u.rate=.85;
+    const v=vs.find(v=>/^en[-_]GB/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang));
+    if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+if(canSpeak&&!NATIVE_TTS){ try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>{}; }catch(e){} }
+
+/* ---------- DIBUJOS ---------- */
+const ST='stroke="#17324D" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
+const S2='stroke="#17324D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"';
+const G1="#43A047", G2="#2E7D32", BR="#8D5A2B", SOIL="#9C6B3F";
+const fl=(x,y,r,c)=>[0,1,2,3,4,5].map(k=>{const a=k*Math.PI/3;return `<ellipse cx="${(x+Math.cos(a)*r).toFixed(1)}" cy="${(y+Math.sin(a)*r).toFixed(1)}" rx="${r*.75}" ry="${r*.5}" transform="rotate(${k*60} ${(x+Math.cos(a)*r).toFixed(1)} ${(y+Math.sin(a)*r).toFixed(1)})" fill="${c}" ${S2}/>`;}).join("")+`<circle cx="${x}" cy="${y}" r="${r*.6}" fill="#8D5A2B" ${S2}/>`;
+const frond=(x,y,len,ang,sc=1)=>{ let s=`<g transform="translate(${x} ${y}) rotate(${ang})"><path d="M0 0 Q-3 ${-len/2} 0 ${-len}" fill="none" stroke="${G2}" stroke-width="${3*sc}"/>`;
+  for(let i=1;i<9;i++){ const yy=-len*i/9, w=(9-i)*1.7*sc; s+=`<ellipse cx="${-w/2-1}" cy="${yy}" rx="${w/2}" ry="${2.2*sc}" fill="${G1}" ${'stroke="#17324D" stroke-width="1"'} transform="rotate(-20 ${-w/2-1} ${yy})"/><ellipse cx="${w/2+1}" cy="${yy}" rx="${w/2}" ry="${2.2*sc}" fill="${G1}" stroke="#17324D" stroke-width="1" transform="rotate(20 ${w/2+1} ${yy})"/>`; }
+  return s+"</g>"; };
+const treeTop=(c)=>`<rect x="44" y="56" width="12" height="36" fill="${BR}" ${ST}/><circle cx="32" cy="50" r="17" fill="${c}" ${ST}/><circle cx="68" cy="50" r="17" fill="${c}" ${ST}/><circle cx="50" cy="34" r="24" fill="${c}" ${ST}/>`;
+const DRAW={
+  tree:()=>`<rect x="0" y="90" width="100" height="10" fill="#7CC36E"/>`+treeTop(G1),
+  bush:()=>`<rect x="0" y="88" width="100" height="12" fill="#7CC36E"/><path d="M12 88Q4 66 22 62Q22 44 42 46Q52 30 68 44Q90 42 86 64Q96 80 86 88Z" fill="#3FA36B" ${ST}/>`+[[30,64],[52,56],[70,66],[44,76],[62,80]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4" fill="#7E8CE0" ${S2}/>`).join(""),
+  grass:()=>`<rect x="0" y="86" width="100" height="14" fill="${SOIL}"/>`+[8,18,28,38,48,58,68,78,88].map((x,i)=>`<path d="M${x-5} 88L${x+(i%2?-3:3)} ${44+(i*13)%22}L${x+5} 88Z" fill="${i%2?G1:"#66BB6A"}" ${S2}/>`).join(""),
+  flower:()=>`<rect x="0" y="78" width="100" height="22" fill="${SOIL}"/><path d="M50 80L42 94M50 80L58 96M50 82L50 98" fill="none" stroke="#5D3A1A" stroke-width="3" stroke-linecap="round"/><path d="M50 80V36" stroke="${G2}" stroke-width="5"/><ellipse cx="38" cy="60" rx="12" ry="6" transform="rotate(-25 38 60)" fill="${G1}" ${S2}/><ellipse cx="62" cy="54" rx="12" ry="6" transform="rotate(25 62 54)" fill="${G1}" ${S2}/>`+fl(50,26,11,"#FFD23F"),
+  leaf:()=>`<path d="M18 84Q14 26 84 16Q82 78 18 84Z" fill="${G1}" ${ST}/><path d="M18 84L74 26M38 64L36 46M50 52L50 34M38 64L56 64M50 52L66 50" fill="none" stroke="#C5E8B7" stroke-width="3" stroke-linecap="round"/>`,
+  roots:()=>`<rect x="0" y="0" width="100" height="14" fill="#7CC36E"/><rect x="0" y="14" width="100" height="86" fill="#C8A27A"/><path d="M50 8V50M50 26L30 56L22 88M50 38L70 66L78 92M50 50L46 90M30 56L14 66M70 66L88 70M50 62L60 84" fill="none" stroke="#5D3A1A" stroke-width="5" stroke-linecap="round"/>`,
+  stem:()=>`<path d="M50 94V12" stroke="${G2}" stroke-width="8" stroke-linecap="round"/><path d="M50 60L30 44M50 40L70 26" stroke="${G2}" stroke-width="5" stroke-linecap="round"/><ellipse cx="28" cy="42" rx="10" ry="5" transform="rotate(30 28 42)" fill="${G1}" ${S2}/><ellipse cx="72" cy="24" rx="10" ry="5" transform="rotate(-30 72 24)" fill="${G1}" ${S2}/>`,
+  seed:()=>`<g transform="rotate(-35 50 50)"><path d="M50 8Q78 40 50 92Q22 40 50 8Z" fill="#4E3424" ${ST}/><path d="M50 16Q60 44 50 84M40 30Q44 50 42 74M60 30Q56 50 58 74" fill="none" stroke="#E8DCC8" stroke-width="4" stroke-linecap="round"/></g>`,
+  fern:()=>`<rect x="0" y="88" width="100" height="12" fill="${SOIL}"/>`+frond(50,90,80,0)+frond(46,90,62,-32,.8)+frond(54,90,62,32,.8),
+  moss:()=>`<rect x="0" y="80" width="100" height="20" fill="#7A6A5A"/><path d="M6 84Q8 62 24 66Q30 50 46 58Q56 46 70 58Q88 54 94 84Z" fill="#7CB342" ${ST}/>`+[[24,58],[38,52],[52,46],[64,50],[78,56]].map(([x,y])=>`<path d="M${x} ${y+8}V${y-14}" stroke="#8D6E63" stroke-width="2"/><ellipse cx="${x}" cy="${y-17}" rx="2.5" ry="4" fill="#A1683A" stroke="#17324D" stroke-width="1"/>`).join("")+[[16,74],[30,70],[50,64],[72,66],[86,76]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3" fill="#558B2F"/>`).join(""),
+  cactus:()=>`<rect x="0" y="0" width="100" height="100" fill="#FFE9B8"/><circle cx="82" cy="18" r="10" fill="#FFB300"/><rect x="0" y="86" width="100" height="14" fill="#E6C27A"/><path d="M42 88V24Q50 14 58 24V88Z" fill="#4CAF50" ${ST}/><path d="M42 60H30V40Q34 32 38 40V52H42M58 52H70V30Q74 22 78 30V60H58" fill="#4CAF50" ${ST}/><path d="M50 26V84" stroke="#2E7D32" stroke-width="2"/>`,
+  lily:()=>`<rect x="0" y="0" width="100" height="100" fill="#4FA3E0"/><path d="M20 70A20 12 0 1 1 40 64L22 68Z" fill="${G1}" ${S2}/><path d="M60 82A22 13 0 1 1 82 76L62 80Z" fill="#66BB6A" ${S2}/><path d="M50 40A18 10 0 1 1 68 36L52 40Z" fill="#66BB6A" ${S2}/>`+fl(36,58,7,"#FFFFFF")+fl(70,30,6,"#FFC0D9"),
+  sunflower:()=>`<rect x="0" y="0" width="100" height="100" fill="#8FD3FF"/><circle cx="16" cy="16" r="10" fill="#FFD23F"/><path d="M58 98V46" stroke="${G2}" stroke-width="6"/><ellipse cx="46" cy="74" rx="11" ry="6" transform="rotate(-25 46 74)" fill="${G1}" ${S2}/>`+[...Array(12)].map((_,k)=>{const a=k*Math.PI/6,x=58+Math.cos(a)*18,y=34+Math.sin(a)*18;return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="9" ry="5" transform="rotate(${k*30} ${x.toFixed(1)} ${y.toFixed(1)})" fill="#FFC107" ${S2}/>`;}).join("")+`<circle cx="58" cy="34" r="13" fill="#6D4C2F" ${S2}/>`,
+  pine:()=>`<rect x="0" y="0" width="100" height="100" fill="#EAF4FB"/><rect x="0" y="88" width="100" height="12" fill="#FFFFFF"/><rect x="45" y="76" width="10" height="16" fill="${BR}" ${ST}/><path d="M50 8L72 38H28Z M50 24L78 58H22Z M50 42L84 80H16Z" fill="#1B5E20" ${ST}/><path d="M38 34L62 34M30 54L70 54M24 76L76 76" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>`,
+  palm:()=>`<rect x="0" y="84" width="100" height="16" fill="#F5D9A8"/><path d="M46 86Q42 56 52 32L58 32Q50 58 56 86Z" fill="#A1683A" ${ST}/><g fill="${G1}" ${S2}><path d="M55 30Q34 14 14 30Q36 24 55 34Z"/><path d="M55 30Q76 12 92 28Q72 24 55 34Z"/><path d="M55 30Q50 8 34 6Q48 18 53 32Z"/><path d="M55 30Q70 46 70 60Q60 44 53 34Z"/><path d="M55 30Q38 42 32 58Q42 42 55 34Z"/></g>`,
+  autumn:()=>`<rect x="0" y="88" width="100" height="12" fill="#E8A45A"/>`+treeTop("#F57C00")+`<circle cx="40" cy="34" r="6" fill="#D84315"/><circle cx="62" cy="44" r="6" fill="#FBC02D"/><ellipse cx="20" cy="80" rx="4" ry="2.5" fill="#D84315"/><ellipse cx="80" cy="76" rx="4" ry="2.5" fill="#F57C00"/><ellipse cx="70" cy="86" rx="4" ry="2.5" fill="#FBC02D"/>`,
+  blossom:()=>`<rect x="0" y="90" width="100" height="10" fill="#7CC36E"/>`+treeTop("#F8BBD0")+[[36,40],[58,30],[66,52],[44,56],[50,22],[28,52]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3.5" fill="#EC407A"/>`).join(""),
+  bare:()=>`<rect x="0" y="86" width="100" height="14" fill="#E8A45A"/><path d="M50 90V50M50 62L30 40L22 22M30 40L36 20M50 54L72 34L80 16M72 34L64 16M50 50L50 18M50 30L40 14M50 30L60 12" fill="none" stroke="${BR}" stroke-width="5" stroke-linecap="round"/>`,
+  appletree:()=>`<rect x="0" y="90" width="100" height="10" fill="#7CC36E"/>`+treeTop(G1)+[[34,44],[56,28],[66,50],[44,58],[30,58],[62,40]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.5" fill="#E53935" ${'stroke="#17324D" stroke-width="1.5"'}/>`).join(""),
+  broccoli:()=>`<path d="M42 92L46 58H54L58 92Z" fill="#AED581" ${ST}/>`+[[50,40,16],[32,48,12],[68,48,12],[38,30,11],[62,30,11],[50,22,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#2E7D32" ${ST}/>`).join("")+[[44,36],[56,44],[34,46],[66,46],[50,26]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.5" fill="#66BB6A"/>`).join(""),
+  farm:()=>`<rect x="0" y="0" width="100" height="40" fill="#BFE6FF"/><rect x="0" y="40" width="100" height="60" fill="${SOIL}"/>`+[48,58,68,80,94].map((y,i)=>`<path d="M0 ${y}H100" stroke="${G1}" stroke-width="${4+i}" stroke-dasharray="${6+i} 4"/>`).join("")+`<path d="M60 40V22Q74 8 88 22V40Z" fill="#E3F2FD" ${S2}/><path d="M67 40V16M74 40V12M81 40V16" stroke="#90A4AE" stroke-width="2"/>`,
+  meadow:()=>`<rect x="0" y="0" width="100" height="52" fill="#BFE6FF"/><circle cx="84" cy="16" r="8" fill="#FFD23F"/><rect x="0" y="52" width="100" height="48" fill="#8BC34A"/>`+[[12,70,"#FFEB3B"],[30,84,"#E91E63"],[48,64,"#FFFFFF"],[66,80,"#FFEB3B"],[84,66,"#9C27B0"],[22,94,"#FFFFFF"],[76,94,"#E91E63"]].map(([x,y,c])=>`<path d="M${x} ${y}V${y-8}" stroke="${G2}" stroke-width="2"/><circle cx="${x}" cy="${y-9}" r="3.5" fill="${c}" stroke="#17324D" stroke-width="1"/>`).join("")+`<path d="M0 52Q20 40 40 52T80 48T100 50" fill="none" stroke="#689F38" stroke-width="3"/>`,
+  forest:()=>`<rect x="0" y="0" width="100" height="100" fill="#DFF3D5"/><rect x="0" y="84" width="100" height="16" fill="#7CC36E"/>`+[[18,1],[44,.8],[70,1.1],[90,.7]].map(([x,s])=>`<rect x="${x-3}" y="${84-12*s}" width="6" height="${12*s}" fill="${BR}"/><path d="M${x} ${84-70*s}L${x+16*s} ${84-12*s}H${x-16*s}Z" fill="#2E7D32" ${S2}/>`).join(""),
+  dark:()=>`<rect x="0" y="0" width="100" height="100" fill="#26372B"/><path d="M0 0H100V30Q50 46 0 30Z" fill="#1B2A20"/><rect x="0" y="84" width="100" height="16" fill="#3E3328"/><path d="M4 86Q10 70 26 74Q36 62 50 72Q64 64 76 74Q90 70 96 86Z" fill="#558B2F" ${S2}/>`+frond(20,86,36,-14,.6)+frond(82,86,40,16,.6),
+  wilted:()=>`<path d="M30 70H70L64 96H36Z" fill="#C9744A" ${ST}/><rect x="26" y="64" width="48" height="8" rx="2" fill="#B5643C" ${ST}/><path d="M50 66V40Q50 26 64 30" fill="none" stroke="#9E9D24" stroke-width="4"/><ellipse cx="40" cy="52" rx="9" ry="4" transform="rotate(40 40 52)" fill="#C0CA33" ${S2}/>`+`<g transform="rotate(130 66 34)">${fl(66,34,7,"#D7CCC8")}</g>`,
+  tulips:()=>`<rect x="0" y="0" width="100" height="100" fill="#BFE6FF"/><rect x="0" y="80" width="100" height="20" fill="#7CC36E"/>`+[[26,40,"#FDD835"],[50,30,"#FDD835"],[74,42,"#FDD835"]].map(([x,y,c])=>`<path d="M${x} 92V${y+10}" stroke="${G2}" stroke-width="4"/><path d="M${x-10} ${y}L${x-5} ${y+16}H${x+5}L${x+10} ${y}L${x+4} ${y+6}L${x} ${y-2}L${x-4} ${y+6}Z" fill="${c}" ${S2}/>`).join("")+`<ellipse cx="38" cy="78" rx="10" ry="4" transform="rotate(-50 38 78)" fill="${G1}" ${S2}/><ellipse cx="62" cy="80" rx="10" ry="4" transform="rotate(50 62 80)" fill="${G1}" ${S2}/>`,
+  spore:()=>`<rect x="0" y="70" width="100" height="30" fill="${SOIL}"/><circle cx="50" cy="66" r="6" fill="#A1683A" ${S2}/><circle cx="36" cy="68" r="2.5" fill="#A1683A"/><circle cx="62" cy="69" r="2.5" fill="#A1683A"/>`,
+  sprout:()=>`<rect x="0" y="80" width="100" height="20" fill="${SOIL}"/><path d="M50 82V48Q50 30 62 34Q70 40 62 46Q56 48 56 42" fill="none" stroke="${G2}" stroke-width="5" stroke-linecap="round"/>`,
+  young:()=>`<rect x="0" y="80" width="100" height="20" fill="${SOIL}"/><path d="M50 82V30Q50 18 60 20Q66 26 58 30M50 54Q36 46 32 34Q30 26 38 28M50 46Q64 40 70 32" fill="none" stroke="${G2}" stroke-width="5" stroke-linecap="round"/><path d="M50 66L38 60M50 66L62 60M50 58L40 52M50 58L60 52" stroke="${G1}" stroke-width="4" stroke-linecap="round"/>`
+};
+const svg=(name)=>`<svg viewBox="0 0 100 100" aria-hidden="true">${DRAW[name]()}</svg>`;
+
+/* escenas para tocar las partes */
+const SCENES=[
+  {title:"plant",parts:["flower","leaf","stem","roots"],svg:`<svg viewBox="0 0 200 220" class="partsvg">
+    <rect x="0" y="150" width="200" height="70" fill="#C8A27A"/><rect x="0" y="146" width="200" height="8" fill="#7CC36E"/>
+    <g data-o="roots"><rect x="60" y="154" width="80" height="62" fill="transparent"/><path d="M100 150V178M100 162L80 186L72 210M100 170L120 192L128 212M100 178L96 210M80 186L64 194M120 192L138 196" fill="none" stroke="#5D3A1A" stroke-width="5" stroke-linecap="round"/></g>
+    <g data-o="stem"><rect x="88" y="70" width="24" height="80" fill="transparent"/><path d="M100 150V72" stroke="#2E7D32" stroke-width="9" stroke-linecap="round"/></g>
+    <g data-o="leaf"><path d="M98 118Q60 124 40 96Q74 88 98 112Z" fill="#43A047" ${ST}/><path d="M98 114L52 98" stroke="#C5E8B7" stroke-width="3"/><path d="M102 104Q140 108 160 80Q128 72 102 98Z" fill="#43A047" ${ST}/><path d="M102 100L150 82" stroke="#C5E8B7" stroke-width="3"/></g>
+    <g data-o="flower">${fl(100,46,18,"#FFD23F")}</g></svg>`},
+  {title:"flower",parts:["petals","sepals","pistil","stamen"],svg:`<svg viewBox="0 0 200 220" class="partsvg">
+    <path d="M100 220V170" stroke="#2E7D32" stroke-width="10"/>
+    <g data-o="petals"><path d="M96 160Q40 150 30 70Q60 64 88 110Z" fill="#FFB74D" ${ST}/><path d="M104 160Q160 150 170 70Q140 64 112 110Z" fill="#FFB74D" ${ST}/><path d="M92 120Q78 60 100 30Q122 60 108 120Z" fill="#FFCC80" ${ST}/></g>
+    <g data-o="sepals"><path d="M100 176Q70 176 58 150Q80 150 98 166Z" fill="#43A047" ${ST}/><path d="M100 176Q130 176 142 150Q120 150 102 166Z" fill="#43A047" ${ST}/></g>
+    <g data-o="pistil"><path d="M90 168Q86 140 96 124V82Q100 74 104 82V124Q114 140 110 168Z" fill="#AED581" ${ST}/><ellipse cx="100" cy="78" rx="9" ry="6" fill="#8BC34A" ${ST}/><circle cx="96" cy="150" r="3" fill="#FFF59D"/><circle cx="104" cy="148" r="3" fill="#FFF59D"/><circle cx="100" cy="158" r="3" fill="#FFF59D"/></g>
+    <g data-o="stamen"><path d="M86 160Q74 120 72 84M114 160Q126 120 128 84M88 160Q84 130 84 104M112 160Q116 130 116 104" fill="none" stroke="transparent" stroke-width="14"/><path d="M86 160Q74 120 72 84M114 160Q126 120 128 84M88 160Q84 130 84 104M112 160Q116 130 116 104" fill="none" stroke="#6D4C41" stroke-width="3"/><ellipse cx="72" cy="80" rx="6" ry="9" fill="#E65100" ${S2}/><ellipse cx="128" cy="80" rx="6" ry="9" fill="#E65100" ${S2}/><ellipse cx="84" cy="100" rx="5" ry="8" fill="#E65100" ${S2}/><ellipse cx="116" cy="100" rx="5" ry="8" fill="#E65100" ${S2}/></g>
+    </svg>`}
+];
+
+/* ---------- DATOS ---------- */
+const ES={tree:"árbol",bush:"arbusto",grass:"hierba",flower:"flor",leaf:"hoja",leaves:"hojas",stem:"tallo",roots:"raíces",seed:"semilla",seeds:"semillas",
+  fern:"helecho",moss:"musgo",cactus:"cactus",broccoli:"brócoli",trunk:"tronco",branch:"rama",branches:"ramas",petals:"pétalos",sepals:"sépalos",
+  pistil:"pistilo",stamen:"estambre",spores:"esporas",fruit:"fruta",deciduous:"de hoja caduca",evergreen:"de hoja perenne",wild:"silvestre",
+  cultivated:"cultivada",sunlight:"luz del sol",water:"agua",dry:"seco",wet:"mojado",dark:"oscuro",apples:"manzanas",
+  flowering:"con flores",["non-flowering"]:"sin flores",reproduce:"reproducirse",naturally:"de forma natural"};
+const WORDS=["tree","bush","grass","flower","leaf","stem","roots","seed","fern","moss","cactus","broccoli"];
+const PART_ES={flower:"la flor",leaf:"la hoja",stem:"el tallo",roots:"las raíces",petals:"los pétalos",sepals:"los sépalos",pistil:"el pistilo",stamen:"el estambre"};
+const opt=a=>a.map(x=>({html:x,val:x}));
+const yesno=(key,label,sentence,yes,explain,disp)=>({key,label,display:(disp||"")+`<div class="sentence">${sentence}</div>`,options:opt(["yes","no"]),answer:yes?"yes":"no",say:sentence,explain});
+const picQ=(key,label,pic,opts,ans,say,explain)=>({key,label,display:`<span class="pic solo">${svg(pic)}</span>`,options:opt(opts),answer:ans,say,explain});
+const fillQ=(key,sentence,opts,ans,explain,pic)=>({key,label:"Complete. Completa la frase.",display:(pic?`<span class="pic solo">${svg(pic)}</span>`:"")+`<div class="sentence">${sentence}</div>`,options:opt(shuffle(opts)),answer:ans,say:sentence.replace("___",ans),explain});
+
+const STATEMENTS=[
+  ["Plants are living things.",true,"Las plantas son seres vivos: nacen, crecen y se reproducen."],
+  ["Trees have got thick trunks and branches.",true,"Los árboles tienen un tronco grueso y ramas."],
+  ["Bushes are small.",true,"Los arbustos son plantas pequeñas, más bajas que los árboles."],
+  ["Grass is thick and strong.",false,"La hierba es fina y blanda, no gruesa ni fuerte."],
+  ["Trees have got rings inside.",true,"Dentro del tronco hay anillos, y cada año sale uno nuevo."],
+  ["Trees grow a new ring each year.",true,"Cada año al árbol le sale un anillo nuevo. Contándolos sabes su edad."],
+  ["Bushes are bigger than trees.",false,"Es al revés: los árboles son más grandes que los arbustos."],
+  ["Grass has got a thick trunk.",false,"La hierba no tiene tronco: tiene tallos finos y blanditos."]
+];
+const RIDDLES=[
+  ["It’s thick and brown. It holds the tree up.","trunk","Es el tronco (trunk): grueso y marrón, sujeta el árbol."],
+  ["They are green. They grow on the branches.","leaves","Son las hojas (leaves): verdes y crecen en las ramas."],
+  ["It grows out of the trunk. Birds sit on it.","branch","Es la rama (branch): sale del tronco y los pájaros se posan en ella."],
+  ["They are under the ground. They drink water.","roots","Son las raíces (roots): están bajo tierra y toman el agua."]
+];
+const TREES={pine:"evergreen",palm:"evergreen",autumn:"deciduous",blossom:"deciduous",bare:"deciduous"};
+const TREE_SENT=[
+  ["This tree is always green.","evergreen"],["This tree has got leaves all year round.","evergreen"],["They don’t lose their leaves.","evergreen"],
+  ["This tree changes with the seasons.","deciduous"],["The leaves on this tree change colour.","deciduous"],["Their leaves change.","deciduous"],
+  ["This tree loses its leaves in autumn.","deciduous"],["This tree keeps its leaves in autumn.","evergreen"]
+];
+const FFS={flower:["🌻","🌹","🌷","🌼","🌸","🌺"],fruit:["🍎","🍌","🍐","🍊","🍓","🍇","🍒"]};
+const JOBS=[
+  ["The colourful parts of the flower.","petals","Los pétalos (petals) son la parte de colores de la flor."],
+  ["They protect the flower before it grows.","sepals","Los sépalos (sepals) son verdes y protegen la flor antes de abrirse."],
+  ["Long tube. The female part of the flower.","pistil","El pistilo (pistil) es el tubo largo del centro: la parte femenina."],
+  ["Long and thin. The male part of the flower.","stamen","Los estambres (stamen) son largos y finos: la parte masculina."]
+];
+const FLOWERING={tulips:"flowering",blossom:"flowering",appletree:"flowering",sunflower:"flowering",moss:"non-flowering",fern:"non-flowering"};
+const PNAME={tulips:"tulipanes",blossom:"un cerezo en flor",appletree:"un manzano",sunflower:"girasoles",moss:"musgo",fern:"un helecho"};
+const DESCR=[
+  ["No flowers, no roots, small plant.","moss","El musgo (moss) es pequeño y no tiene flores ni raíces."],
+  ["No flowers, large leaves, spores to reproduce.","fern","El helecho (fern) tiene hojas grandes y se reproduce con esporas."],
+  ["Small white flowers. They grow into apples.","apple tree","El manzano (apple tree) tiene flores blancas que se convierten en manzanas."]
+];
+const STAGES=["spore","sprout","young","fern"];
+const ENV=[
+  ["dark","Some plants grow in ___ places.","dark","Este bosque es oscuro (dark): aquí crecen musgos y helechos."],
+  ["sunflower","Some plants need a lot of ___.","sunlight","Los girasoles necesitan mucha luz del sol (sunlight)."],
+  ["lily","Some plants grow in ___ places.","wet","Los nenúfares crecen en el agua, en sitios mojados (wet)."],
+  ["cactus","Some plants grow in ___ places.","dry","El cactus vive en el desierto, un sitio seco (dry)."]
+];
+const WILD={forest:"wild",meadow:"wild",farm:"cultivated"};
+
+/* ---------- GENERADORES (tipo test) ---------- */
+const GEN={
+  plants(){
+    const k=Math.random();
+    if(k<.35){ const t=rnd(["tree","bush","grass"]); return picQ("p"+t,"What’s this? ¿Qué es?",t,shuffle(["tree","bush","grass","flower"]),t,t,`“${t}” = ${ES[t]}.`); }
+    if(k<.7){ const [s,y,e]=rnd(STATEMENTS); return yesno("s"+s,"Read and answer: yes or no?",s,y,e); }
+    const [s,a,e]=rnd(RIDDLES); return {key:"r"+a,label:"Which part of the tree? ¿Qué parte es?",display:`<span class="pic solo">${svg("tree")}</span><div class="sentence" style="font-size:1.3rem">${s}</div>`,options:opt(shuffle(["trunk","leaves","branch","roots"])),answer:a,say:s,explain:e};
+  },
+  listen(){
+    const t=rnd(WORDS), opts=shuffle([t,...pick(WORDS.filter(x=>x!==t),3)]);
+    return {key:"l"+t,label: canSpeak?"Listen! Escucha y toca el dibujo.":"Read! Lee y toca el dibujo.",
+      display: canSpeak?`<button class="btn go" style="font-size:2rem;padding:16px 28px" onclick="speak('${t}')">🔊 Listen</button>`:`<div class="sentence">${t}</div>`,
+      options:opts.map(o=>({html:svg(o),val:o})),pics:true,answer:t,say:t,autoSay:true,explain:`“${t}” = ${ES[t]}.`};
+  },
+  seasons(){
+    if(Math.random()<.5){ const t=rnd(Object.keys(TREES)), a=TREES[t];
+      return picQ("t"+t,"Deciduous or evergreen?",t,["deciduous","evergreen"],a,a,
+        a==="evergreen"?"Es de hoja perenne (evergreen): tiene hojas verdes todo el año.":"Es de hoja caduca (deciduous): cambia con las estaciones y pierde las hojas en otoño."); }
+    const [s,a]=rnd(TREE_SENT);
+    return {key:"ts"+s,label:"Deciduous or evergreen?",display:`<div class="sentence">${s}</div>`,options:opt(["deciduous","evergreen"]),answer:a,say:s,
+      explain:a==="evergreen"?"Evergreen: no pierde las hojas, siempre está verde.":"Deciduous: sus hojas cambian de color y se caen en otoño."};
+  },
+  ffs(){
+    const k=Math.random();
+    if(k<.4){ const kind=rnd(["flower","fruit","seed"]);
+      const disp=kind==="seed"?`<span class="pic solo">${svg("seed")}</span>`:`<span class="big">${rnd(FFS[kind])}</span>`;
+      return {key:"f"+kind+Math.random(),label:"Flower, fruit or seed?",display:disp,options:opt(["flower","fruit","seed"]),answer:kind,say:kind,
+        explain:{flower:"Es una flor (flower).",fruit:"Es una fruta (fruit). Las frutas salen de las flores y llevan semillas dentro.",seed:"Es una semilla (seed): si la plantas, crece una planta nueva."}[kind]}; }
+    if(k<.8){ const [s,a,e]=rnd(JOBS); return {key:"j"+a,label:"Which part of the flower?",display:`<div class="sentence" style="font-size:1.35rem">${s}</div>`,options:opt(shuffle(["petals","sepals","pistil","stamen"])),answer:a,say:s,explain:e}; }
+    return rnd([
+      ()=>fillQ("fr","Flowers are the tool that some plants use to ___.",["reproduce","sleep","drink","walk"],"reproduce","Las plantas usan las flores para reproducirse (reproduce): hacer plantas nuevas."),
+      ()=>fillQ("fb","Broccoli is a flower and a ___!",["vegetable","fruit","seed","tree"],"vegetable","¡El brócoli es una flor y también una verdura (vegetable)!","broccoli"),
+      ()=>fillQ("fa","Apple trees have got flowers. The flowers grow into ___.",["apples","spores","roots","leaves"],"apples","Las flores del manzano se convierten en manzanas (apples).","appletree")
+    ])();
+  },
+  spores(){
+    const k=Math.random();
+    if(k<.3){ const t=rnd(Object.keys(FLOWERING)), a=FLOWERING[t];
+      return picQ("fl"+t,"Flowering or non-flowering?",t,["flowering","non-flowering"],a,a,
+        a==="flowering"?`Son ${PNAME[t]}: plantas con flores (flowering).`:`Es ${PNAME[t]}: no tiene flores (non-flowering), se reproduce con esporas.`); }
+    if(k<.5){ const [s,a,e]=rnd(DESCR); return {key:"d"+a,label:"Which plant is it? ¿Qué planta es?",display:`<div class="sentence" style="font-size:1.35rem">${s}</div>`,options:opt(shuffle(["moss","fern","apple tree","cactus"])),answer:a,say:s,explain:e}; }
+    if(k<.7){ const i=Math.floor(Math.random()*3), a=STAGES[i+1];
+      return {key:"st"+i,label:"What comes next? ¿Qué viene después?",display:`<span class="pic solo">${svg(STAGES[i])}</span>`,
+        options:shuffle(STAGES.filter(x=>x!==STAGES[i])).map(o=>({html:svg(o),val:o})),pics:true,answer:a,say:"The spores grow into new ferns.",
+        explain:"Primero la espora, luego sale un brote enrollado, después crece y al final es un helecho nuevo."}; }
+    return rnd([
+      ()=>fillQ("sp","Non-flowering plants use ___ to reproduce.",["spores","seeds","flowers","apples"],"spores","Las plantas sin flores se reproducen con esporas (spores)."),
+      ()=>fillQ("su","Spores on ferns are ___ the leaf.",["under","inside"],"under","En los helechos, las esporas están debajo de la hoja (under).","fern"),
+      ()=>fillQ("sl","Spores on moss have got ___ stalks.",["long","short"],"long","El musgo tiene tallitos largos (long) con las esporas arriba.","moss"),
+      ()=>fillQ("sn","The spores grow into new ___.",["ferns","apples","flowers","seeds"],"ferns","Las esporas del helecho crecen y se convierten en helechos nuevos (ferns)."),
+      ()=>fillQ("sh","Ferns haven’t got ___.",["flowers","leaves","roots","stems"],"flowers","Los helechos no tienen flores (flowers).")
+    ])();
+  },
+  places(){
+    const k=Math.random();
+    if(k<.3){ const t=rnd(Object.keys(WILD)), a=WILD[t];
+      return picQ("w"+t,"Wild or cultivated?",t,["wild","cultivated"],a,a,
+        a==="wild"?"Son plantas silvestres (wild): crecen solas, de forma natural.":"Son plantas cultivadas (cultivated): crecen con la ayuda de las personas, en una granja o un invernadero."); }
+    if(k<.45){ const w=Math.random()<.5;
+      return {key:"wg"+w,label:"Read and choose.",display:`<div class="sentence">${w?"Wild plants":"Cultivated plants"} grow…</div>`,options:opt(["naturally","with the help of humans"]),one:true,
+        answer:w?"naturally":"with the help of humans",say:w?"Wild plants grow naturally.":"Cultivated plants grow with the help of humans.",
+        explain:w?"Wild = crecen solas, de forma natural.":"Cultivated = las cultivan las personas, por ejemplo en granjas."}; }
+    if(k<.85){ const [p,s,a,e]=rnd(ENV); return fillQ("e"+p,s,["dark","wet","dry","sunlight"],a,e,p); }
+    return fillQ("nw","What does this plant need? It needs ___.",["water","spores","snow","a trunk"],"water","La planta está mustia: necesita agua (water).","wilted");
+  }
+};
+
+const GAMES=[
+  {id:"plants", ic:"🌳",name:"What are plants?",topic:"Tree, bush, grass"},
+  {id:"listen", ic:"🎧",name:"Listen!",topic:"Escucha y elige"},
+  {id:"parts",  ic:"🌻",name:"Parts of a plant",topic:"Toca la parte que te dicen"},
+  {id:"seasons",ic:"🍂",name:"Deciduous or evergreen?",topic:"Árboles y estaciones"},
+  {id:"ffs",    ic:"🍎",name:"Flowers and fruits",topic:"Flores, frutas y semillas"},
+  {id:"spores", ic:"🌿",name:"Plants without flowers",topic:"Helechos, musgo y esporas"},
+  {id:"places", ic:"🏜️",name:"Where do plants grow?",topic:"Wild, cultivated y lugares"},
+  {id:"draw",   ic:"🎨",name:"Draw & spell",topic:"Dibuja y escribe"},
+  {id:"final",  ic:"🏆",name:"Giant tree challenge",topic:"Reto final: de todo"}
+];
+const TIPS={
+  plants:"Tree = árbol grande con tronco. Bush = arbusto pequeño. Grass = hierba fina.",
+  listen:"Pulsa 🔊 las veces que quieras.",
+  parts:"Planta: flower, leaf, stem, roots. Flor: petals, sepals, pistil, stamen.",
+  seasons:"Evergreen = siempre verde. Deciduous = pierde las hojas en otoño.",
+  ffs:"Las flores sirven para reproducirse. Las flores se convierten en frutas con semillas.",
+  spores:"Helechos y musgo no tienen flores: se reproducen con esporas (spores).",
+  places:"Wild = crece sola. Cultivated = la cultivan las personas.",
+  draw:"Escucha la palabra, dibújala y luego escríbela letra a letra.",
+  final:"Si fallas algo, vuelve a ese juego y repásalo."
+};
+
+/* ---------- HITOS ---------- */
+const MILES=[
+  {at:3, st:"🌱",color:"#8BC34A",name:"color verde lima"},
+  {at:6, st:"🌷",color:"#F48FB1",name:"color rosa"},
+  {at:9, st:"🍀",color:"#FB8C00",name:"color naranja"},
+  {at:12,st:"🌵",color:"#8E44AD",name:"color morado"},
+  {at:15,st:"🌻",color:"#4FC3F7",name:"color celeste"},
+  {at:18,st:"🍁",color:"#FFB300",name:"color dorado"},
+  {at:21,st:"🌈",color:"rainbow",name:"pincel arcoíris"},
+  {at:24,st:"🌴",color:"#FF5C8A",name:"color coral"},
+  {at:27,st:"👑",color:"#9E9E9E",name:"color plata"}
+];
+const BASE_COLORS=["#17324D","#E53935","#1E88E5","#43A047","#FDD835","#8D5A2B"];
+
+/* ---------- ESTADO ---------- */
+const KEY="plantasScience_v1_"+PROFILE;
+let save={best:{},perfect:{}};
+try{ const s=JSON.parse(STORE.get(KEY)); if(s) save=Object.assign(save,s); }catch(e){}
+const persist=()=>STORE.set(KEY,JSON.stringify(save));
+const totalStars=()=>GAMES.reduce((a,g)=>a+(save.best[g.id]||0),0);
+const unlockedMiles=()=>MILES.filter(m=>totalStars()>=m.at);
+const isOpen=i=>i===0||(save.best[GAMES[i-1].id]||0)>=1;
+const starStr=n=>"★".repeat(n)+"☆".repeat(3-n);
+const starsFor=(s,t)=>{const p=s/t;return p>=.9?3:p>=.7?2:p>=.4?1:0;};
+
+function renderMenu(){
+  const tot=totalStars();
+  $("starTotal").textContent=`⭐ ${tot}/27`;
+  $("gemTotal").textContent=`💎 ${CEVA.wallet(PROFILE)}`;
+  $("stickers").innerHTML=MILES.map(m=>tot>=m.at?`<span title="${m.name}">${m.st}</span>`:`<span class="lock">🔒</span>`).join("");
+  const nx=MILES.find(m=>tot<m.at);
+  $("nextUnlock").textContent = nx ? `Álbum de pegatinas · Siguiente desbloqueo con ${nx.at}⭐ (te faltan ${nx.at-tot})` : "Álbum completo. ¡Eres una campeona!";
+  const done=GAMES.filter(g=>save.perfect[g.id]).length;
+  $("prizeProg").textContent=`Premio: ${done}/${GAMES.length} juegos sin fallos`+(save.vueltas?` · Vueltas completadas: ${save.vueltas}`:"")+" · Cada estrella = 1 💎";
+  const box=$("cards"); box.innerHTML="";
+  GAMES.forEach((g,i)=>{
+    const open=isOpen(i), b=document.createElement("button");
+    b.className="card"+(open?"":" locked");
+    b.innerHTML=`<span class="ic">${open?g.ic:"🔒"}</span><span><b>${g.name}</b><small>${open?g.topic:"Consigue 1⭐ en el anterior"}</small>
+      <span class="st">${starStr(save.best[g.id]||0)}${save.perfect[g.id]?" ✔":""}</span></span>`;
+    if(open) b.onclick=()=>start(g.id); else b.disabled=true;
+    box.appendChild(b);
+  });
+}
+function show(id){ ["menu","play","result"].forEach(s=>$(s).hidden=s!==id); window.scrollTo(0,0); }
+
+/* ---------- PARTIDA ---------- */
+let S=null;
+function buildQs(kinds,n){
+  const used=new Set(), qs=[]; let tries=0;
+  while(qs.length<n && tries<500){ tries++; const q=GEN[rnd(kinds)](); if(used.has(q.key)) continue; used.add(q.key); qs.push(q); }
+  while(qs.length<n){ qs.push(GEN[rnd(kinds)]()); }
+  return qs;
+}
+function start(id){
+  S={id,i:0,score:0,answered:false,before:totalStars()};
+  if(id==="parts"){ S.tasks=[]; SCENES.forEach((sc,r)=>shuffle(sc.parts).forEach(p=>S.tasks.push({scene:r,part:p}))); S.total=S.tasks.length; }
+  else if(id==="draw"){ S.words=pick(["tree","bush","grass","flower","leaf","seed","roots","stem","fern","moss","cactus"],5); S.total=5; }
+  else if(id==="final"){ S.qs=buildQs(["plants","listen","seasons","ffs","spores","places"],10); S.total=10; }
+  else { S.qs=buildQs([id],8); S.total=8; }
+  show("play"); render();
+}
+function header(){
+  $("count").textContent=`${S.i+1}/${S.total}`;
+  $("prog").style.width=(S.i/S.total*100)+"%";
+  $("fb").innerHTML=""; $("next").hidden=true; S.answered=false;
+}
+function render(){
+  header();
+  if(S.id==="parts") return renderParts();
+  if(S.id==="draw") return renderDraw();
+  const q=S.qs[S.i];
+  $("qLabel").textContent=q.label;
+  $("disp").innerHTML=q.display;
+  const sent=$("disp").querySelector(".sentence");
+  $("speakBtn").hidden=!canSpeak||!sent; $("speakBtn").onclick=()=>{ if(sent) speak(sent.textContent.replace(/_+/g,"blank")); };
+  const o=$("opts"); o.innerHTML="";
+  o.className="opts"+(q.pics?" pics":"")+(q.one?" one":"");
+  q.options.forEach(op=>{
+    const b=document.createElement("button"); b.className="btn"; b.innerHTML=op.html; b.dataset.val=op.val;
+    b.onclick=()=>choose(op.val,b); o.appendChild(b);
+  });
+  if(q.autoSay) speak(q.say);
+}
+function addPoint(){ S.score++; }
+function choose(val,btn){
+  if(S.answered) return; S.answered=true;
+  const q=S.qs[S.i], ok=val===q.answer;
+  [...$("opts").children].forEach(b=>{ b.disabled=true; if(b.dataset.val===q.answer) b.classList.add("ok"); });
+  if(!ok){ btn.classList.add("bad","shake"); }
+  if(ok) addPoint();
+  $("fb").innerHTML=(ok?'<b class="y">Great job! 🌻</b> ':'<b class="n">Oops!</b> ')+q.explain;
+  speak(q.say);
+  $("next").hidden=false; $("next").focus();
+}
+
+/* tocar partes */
+function renderParts(){
+  const t=S.tasks[S.i], sc=SCENES[t.scene];
+  if(S.partsScene!==t.scene){ S.found={}; S.partsScene=t.scene; }
+  S.taskMiss=false;
+  const sentence=`Tap the ${t.part}.`;
+  $("qLabel").textContent=sentence;
+  $("speakBtn").hidden=!canSpeak; $("speakBtn").onclick=()=>speak(sentence);
+  $("disp").innerHTML=`<div class="partwrap" id="scene">${sc.svg}</div><div class="found" id="found">${Object.keys(S.found).map(p=>`<span class="tag">${p}</span>`).join("")}</div>`;
+  $("scene").querySelectorAll("[data-o]").forEach(g=>{ if(S.found[g.dataset.o]) g.classList.add("hit"); g.addEventListener("pointerdown",e=>{ e.preventDefault(); tapPart(g.dataset.o,g); }); });
+  const o=$("opts"); o.className=""; o.innerHTML="";
+  speak(sentence);
+}
+function tapPart(part,el){
+  if(S.answered) return;
+  const t=S.tasks[S.i];
+  if(part!==t.part){ S.taskMiss=true; el.classList.remove("miss"); void el.getBoundingClientRect(); el.classList.add("miss"); setTimeout(()=>el.classList.remove("miss"),500);
+    $("fb").innerHTML=`<b class="n">Eso es “${part}” (${PART_ES[part]}).</b> Busca: the ${t.part}.`; speak(part); return; }
+  S.answered=true; S.found[part]=1; el.classList.add("hit");
+  $("found").innerHTML=Object.keys(S.found).map(p=>`<span class="tag">${p}</span>`).join("");
+  if(!S.taskMiss) addPoint();
+  $("fb").innerHTML=(S.taskMiss?'<b class="y">Ya está.</b> ':'<b class="y">Perfect!</b> ')+`${t.part} = ${PART_ES[t.part]}.`;
+  speak(t.part); $("next").hidden=false; $("next").focus();
+}
+
+/* dibujar y deletrear */
+let DC=null;
+function renderDraw(){
+  const w=S.words[S.i];
+  S.phase="draw"; S.hinted=false; S.miss=false; S.pos=0;
+  S.brush=S.brush||BASE_COLORS[0]; S.size=S.size||8; S.stamp=null;
+  const sentence=`Draw ${w==="grass"||w==="moss"||w==="roots"?"some":/^[aeiou]/.test(w)?"an":"a"} ${w}.`;
+  $("qLabel").textContent=sentence+" Dibújalo.";
+  $("speakBtn").hidden=!canSpeak; $("speakBtn").onclick=()=>speak(w);
+  $("disp").innerHTML=`<canvas id="dc" width="600" height="400"></canvas><div class="slots" id="slots" hidden></div><div id="hint"></div>`;
+  setupCanvas(); drawTools(); speak(sentence);
+}
+function drawTools(){
+  const cols=[...BASE_COLORS,...unlockedMiles().map(m=>m.color)];
+  const stamps=unlockedMiles().map(m=>m.st);
+  const o=$("opts"); o.className="tools";
+  o.innerHTML=`<div class="palette">${cols.map(c=>`<button class="sw${c==="rainbow"?" rainbow":""}${S.brush===c&&!S.stamp?" sel":""}" data-c="${c}" style="${c==="rainbow"?"":"background:"+c}" aria-label="color"></button>`).join("")}</div>
+    <div class="rowb">
+      <button class="btn small${S.size===5?" sel":""}" data-s="5">Fino</button>
+      <button class="btn small${S.size===12?" sel":""}" data-s="12">Gordo</button>
+      <button class="btn small" data-x="erase">🧽 Goma</button>
+      <button class="btn small" data-x="clear">Borrar todo</button>
+      <button class="btn small" data-x="hint">💡 Pista</button>
+    </div>
+    ${stamps.length?`<div class="rowb">${stamps.map(s=>`<button class="btn stamp${S.stamp===s?" sel":""}" data-st="${s}">${s}</button>`).join("")}</div>`:`<p class="tip" style="text-align:center;font-size:.9rem">Consigue estrellas para desbloquear colores y pegatinas.</p>`}
+    <button class="btn go" data-x="done">¡Listo! Ahora escríbelo</button>`;
+  o.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{ S.brush=b.dataset.c; S.stamp=null; drawTools(); });
+  o.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{ S.size=+b.dataset.s; drawTools(); });
+  o.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ S.stamp=b.dataset.st; drawTools(); });
+  o.querySelector('[data-x="erase"]').onclick=()=>{ S.brush="#FFFFFF"; S.stamp=null; drawTools(); };
+  o.querySelector('[data-x="clear"]').onclick=()=>{ DC.fillStyle="#fff"; DC.fillRect(0,0,600,400); };
+  o.querySelector('[data-x="hint"]').onclick=()=>{ S.hinted=true; $("hint").innerHTML=`<span class="pic" style="width:110px;display:block">${svg(S.words[S.i])}</span>`; $("fb").innerHTML="Con pista esta palabra no cuenta para el ✔ perfecto."; };
+  o.querySelector('[data-x="done"]').onclick=startSpell;
+}
+function setupCanvas(){
+  const c=$("dc"); DC=c.getContext("2d"); DC.fillStyle="#fff"; DC.fillRect(0,0,600,400);
+  DC.lineCap="round"; DC.lineJoin="round";
+  let drawing=false,last=null,hue=0;
+  const pt=e=>{const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height};};
+  c.addEventListener("pointerdown",e=>{
+    if(S.phase!=="draw") return;
+    e.preventDefault(); const p=pt(e);
+    if(S.stamp){ DC.font="64px serif"; DC.textAlign="center"; DC.textBaseline="middle"; DC.fillText(S.stamp,p.x,p.y); return; }
+    drawing=true; last=p; c.setPointerCapture(e.pointerId);
+    DC.beginPath(); DC.fillStyle=S.brush==="rainbow"?`hsl(${hue},90%,55%)`:S.brush; DC.arc(p.x,p.y,S.size/2,0,Math.PI*2); DC.fill();
+  });
+  c.addEventListener("pointermove",e=>{
+    if(!drawing) return; const p=pt(e);
+    hue=(hue+4)%360;
+    DC.strokeStyle=S.brush==="rainbow"?`hsl(${hue},90%,55%)`:S.brush;
+    DC.lineWidth=S.brush==="#FFFFFF"?S.size*2.5:S.size;
+    DC.beginPath(); DC.moveTo(last.x,last.y); DC.lineTo(p.x,p.y); DC.stroke(); last=p;
+  });
+  const end=()=>{drawing=false;};
+  c.addEventListener("pointerup",end); c.addEventListener("pointercancel",end);
+}
+function startSpell(){
+  const w=S.words[S.i];
+  S.phase="spell"; S.pos=0;
+  $("qLabel").textContent="Now write it! Toca las letras en orden.";
+  $("dc").style.maxWidth="260px";
+  const sl=$("slots"); sl.hidden=false; sl.innerHTML=w.split("").map(()=>`<span class="slot"></span>`).join("");
+  const o=$("opts"); o.className="letters";
+  let letters=shuffle(w.split("")); if(letters.join("")===w && w.length>1) letters=shuffle(letters);
+  o.innerHTML=letters.map(l=>`<button class="btn" data-l="${l}">${l}</button>`).join("");
+  o.querySelectorAll("button").forEach(b=>b.onclick=()=>tapLetter(b));
+  speak(w);
+}
+function tapLetter(b){
+  if(S.answered||b.disabled) return;
+  const w=S.words[S.i];
+  if(b.dataset.l===w[S.pos]){
+    $("slots").children[S.pos].textContent=b.dataset.l; b.disabled=true; b.style.visibility="hidden"; S.pos++;
+    if(S.pos===w.length){
+      S.answered=true; const ok=!S.miss&&!S.hinted; if(ok) addPoint();
+      $("fb").innerHTML=(ok?'<b class="y">Amazing!</b> ':'<b class="y">Well done!</b> ')+`“${w}” = ${ES[w]}.`;
+      speak(w); $("next").hidden=false; $("next").focus();
+    }
+  } else {
+    S.miss=true; b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake","bad");
+    setTimeout(()=>b.classList.remove("bad"),450);
+    $("fb").innerHTML='<b class="n">Esa no va ahora.</b> Pulsa 🔊 y escucha otra vez.';
+  }
+}
+
+function next(){ S.i++; if(S.i>=S.total) return finish(); render(); }
+
+function finish(){
+  $("prog").style.width="100%";
+  const st=starsFor(S.score,S.total);
+  save.best[S.id]=Math.max(save.best[S.id]||0,st);
+  save.gems=(save.gems||0)+st;
+  const perfect=S.score===S.total;
+  if(perfect) save.perfect[S.id]=true;
+  persist();
+  $("rStars").textContent=starStr(st);
+  $("rScore").textContent=`${S.score}/${S.total}`;
+  const after=totalStars(), news=MILES.filter(m=>S.before<m.at&&after>=m.at);
+  const done=GAMES.filter(g=>save.perfect[g.id]).length, all=done===GAMES.length;
+  $("rMsg").textContent= all ? "¡Todos los juegos sin fallos! Te has ganado el premio."
+    : perfect ? `¡Todo perfecto! Llevas ${done} de ${GAMES.length} juegos sin fallos.`
+    : st===3?"¡Genial! Casi perfecto." : st===2?"¡Muy bien!" : st===1?"¡Bien! Sigue practicando." : "Vuelve a intentarlo, ¡tú puedes!";
+  const unl=news.map(m=>`${m.st} Nueva pegatina y ${m.name} para dibujar`).join("<br>");
+  $("rUnlock").hidden=!unl; $("rUnlock").innerHTML=unl;
+  $("rTip").textContent=(st?`Ganas ${st} 💎. `:"Sin estrellas no hay gemas esta vez. ")+"Truco: "+TIPS[S.id];
+  $("gemTotal").textContent=`💎 ${CEVA.wallet(PROFILE)}`;
+  $("prize").hidden=!all;
+  show("result"); $("again").focus();
+}
+
+$("next").onclick=next;
+$("quit").onclick=()=>{ renderMenu(); show("menu"); };
+$("again").onclick=()=>start(S.id);
+$("toMenu").onclick=()=>{ renderMenu(); show("menu"); };
+
+/* ---------- PREMIO ---------- */
+$("prize").onclick=()=>{ save.perfect={}; persist(); Premios.start(save.vueltas||0,()=>{ save.best={}; save.perfect={}; save.vueltas=(save.vueltas||0)+1; persist(); renderMenu(); show("menu"); }); };
+
+/* ---------- MINIJUEGOS ---------- */
+const VOC=WORDS.map(w=>({w,raw:svg(w),pic:`<span class="mg-pic">${svg(w)}</span>`}));
+MiniGames.init({
+  lang:"en-GB",
+  theme:{bg:"#F3FBEA",card:"#FFFFFF",ink:"#17324D",line:"#17324D",accent:"#F27A1A",soft:"#E3F4D3",rad:"16px",head:'"Baloo 2",sans-serif'},
+  getSave:()=>save,
+  persist,
+  addGems(n){ save.gems=(save.gems||0)+n; persist(); },
+  onChange:()=>renderMenu(),
+  hang:()=>VOC.map(v=>({w:v.w,hint:v.pic})),
+  pairsTitle:"Junta cada dibujo con su palabra en inglés",
+  pairs:()=>VOC.map(v=>[v.raw,`<b style="font-size:1.05rem">${v.w}</b>`]),
+  search:()=>[
+    {title:"Plants",words:["tree","bush","grass","fern","moss","cactus"]},
+    {title:"Parts of a plant",words:["flower","leaf","stem","roots","seed","trunk"]},
+    {title:"Parts of a flower",words:["petals","sepals","pistil","stamen","seeds","fruit"]},
+    {title:"Where plants grow",words:["wild","dry","wet","dark","water","farm"]}
+  ],
+  quiz:()=>{ const k=rnd(["plants","seasons","ffs","spores","places"]); const q=GEN[k](); return {label:q.label,display:q.display,options:q.options,answer:q.answer}; },
+  dict:()=>[...WORDS,"trunk","branch","petals","sepals","pistil","stamen","spores","water","wild","dry","wet","dark"],
+  catch:()=>[
+    {title:"Tap only parts of a flower · Toca solo partes de la flor",yes:["petals","sepals","pistil","stamen"],no:["trunk","branch","roots","moss","grass"]},
+    {title:"Tap only plants with flowers · Toca solo plantas con flores",yes:["tulip","sunflower","rose","apple tree","daisy"],no:["fern","moss"]},
+    {title:"Tap only parts of a plant · Toca solo partes de la planta",yes:["flower","leaf","stem","roots"],no:["spores","water","sunlight","farm"]},
+    {title:"Tap only plants · Toca solo plantas",yes:["tree","bush","grass","fern","moss","cactus"],no:["water","sunlight","farm","seeds"]}
+  ]
+});
+const _renderMenu=renderMenu;
+renderMenu=function(){ _renderMenu(); const pp=$("prizeProg"); if(pp) pp.textContent+=` · Próximo premio: ${Premios.NAMES[(save.vueltas||0)%Premios.NAMES.length]}`; MiniGames.renderCards($("mgCards")); if(window.Extras) Extras.renderButtons($("exBtns")); };
+
+renderMenu();
+</script>
+
+<script src="ciencias-cfg.js"></script>
+</body>
+</html>
