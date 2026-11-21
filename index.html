@@ -209,7 +209,8 @@ const SUBJECTS={
   lengua:{name:"Lengua",sub:"Examen de Lengua: ¡A por todas!",file:"lengua.html",icon:"⛏️",bg:"#B8E28F",key:"minaPalabras_v1_",max:24},
   ingles:{name:"Inglés",sub:"Lulu’s English Island · Unit 1",file:"ingles.html",icon:"🌺",bg:"#FFC2D4",key:"englishIsland_v1_",max:27},
   mates:{name:"Mates",sub:"Multiplicaciones de dos cifras · La cueva profunda",file:"mates.html",icon:"✖️",bg:"#9ED9DE",key:"matesCueva_v1_",max:24},
-  ciencias:{name:"Science",sub:"Sunny’s Plant Garden · Unit 1 · Plants",file:"ciencias.html",icon:"🌻",bg:"#C8E8A8",key:"plantasScience_v1_",max:27}
+  ciencias:{name:"Science",sub:"Sunny’s Plant Garden · Unit 1 · Plants",file:"ciencias.html",icon:"🌻",bg:"#C8E8A8",key:"plantasScience_v1_",max:27},
+  sociales:{name:"Sociales",sub:"Tema 1 · El clima · Mundo de bloques",file:"sociales.html",icon:"🌦️",bg:"#9ED4FF",key:"climaSociales_v1_",max:27}
 };
 const AVATARS=["🦊","🐢","🐱","🐶","🦁","🐼","🐨","🐸","🦄","🐙","🐬","🦖","🐝","🐧","🦉","🐰","🐯","🦋"];
 const COLORS=["#B8E28F","#FFC2D4","#A9DDF5","#FFE08A","#D7C2F2","#FFC79E"];
@@ -320,7 +321,8 @@ function stickerHTML(id){
 /* ---------- datos iniciales y migración ---------- */
 (function migrate(){
   let ps=CEVA.profiles();
-  if(!ps.length){ ps=[{id:"p2",name:"2º Primaria",avatar:"🐢",color:"#FFC2D4",subjects:["ingles","ciencias"]},{id:"p4",name:"4º Primaria",avatar:"🦊",color:"#B8E28F",subjects:["lengua","mates"]}]; CEVA.setProfiles(ps); }
+  if(!ps.length){ ps=[{id:"p2",name:"2º Primaria",avatar:"🐢",color:"#FFC2D4",subjects:["ingles","ciencias"]},{id:"p4",name:"4º Primaria",avatar:"🦊",color:"#B8E28F",subjects:["lengua","mates","sociales"]}]; CEVA.setProfiles(ps); STORE.set("mig_sociales_v1","1"); }
+  if(!STORE.get("mig_sociales_v1")){ ps.forEach(p=>{ if(p.subjects.includes("mates")&&!p.subjects.includes("sociales")) p.subjects.push("sociales"); }); CEVA.setProfiles(ps); STORE.set("mig_sociales_v1","1"); }
   if(STORE.get("shop_v1")==null){
     const shop=[];
     RARS.forEach(([r,p])=>{ const n=r==="común"||r==="rara"?6:4; for(let i=0;i<n;i++) shop.push({id:uid("st_"),rar:r,price:p,name:"",img:null}); });

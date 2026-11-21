@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El clima · Mundo de bloques · Sociales</title>
+<link rel="icon" type="image/png" href="icono.png">
+<link rel="apple-touch-icon" href="icono.png">
+<link href="fonts/fonts.css" rel="stylesheet">
+<script src="minijuegos.js"></script>
+<script src="premios.js"></script>
+<script src="extras.js"></script>
+<script src="ceva.js"></script>
+<style>
+:root{
+  --sky:#9ED4FF; --sky2:#DDF1FF; --ink:#1E1E1E; --soft:#3B4A3B;
+  --card:#F4EBD9; --cardInk:#1E1E1E; --btn:#E6D8BC; --line:#1B1B1B;
+  --accent:#3E8E2B; --grass:#5DBB3F; --dirt:#8B5A2B; --gold:#F2C94C; --ok:#2E8B3E; --bad:#C62F37;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;color:var(--ink);font-family:"Nunito",system-ui,sans-serif;
+  background:linear-gradient(to bottom,var(--sky),var(--sky2) 70%);display:flex;flex-direction:column;image-rendering:pixelated}
+.ground{margin-top:auto;height:56px;flex:none;border-top:3px solid var(--line);
+  background:linear-gradient(to bottom,#5DBB3F 0 12px,#3E8E2B 12px 15px,#8B5A2B 15px);position:relative}
+.ground::after{content:"";position:absolute;inset:15px 0 0;
+  background-image:linear-gradient(90deg,rgba(0,0,0,.18) 50%,transparent 50%),linear-gradient(rgba(0,0,0,.12) 50%,transparent 50%);
+  background-size:20px 20px,20px 20px}
+main{width:100%;max-width:760px;margin:0 auto;padding:18px 16px 28px;display:flex;flex-direction:column;gap:16px}
+.px{font-family:"Press Start 2P",monospace}
+h1{font-family:"Press Start 2P",monospace;font-size:clamp(1rem,4.8vw,1.45rem);line-height:1.45;margin:0;color:#fff;text-shadow:3px 3px 0 #1B1B1B}
+.top{display:flex;align-items:center;gap:12px}
+.top .mascot{width:72px;flex:none}
+.top .sub{margin:6px 0 0;color:var(--soft);font-weight:900}
+.stats{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.pill{background:var(--card);color:var(--cardInk);border:3px solid var(--line);padding:5px 10px;font-weight:900;white-space:nowrap;
+  box-shadow:inset -3px -3px 0 rgba(0,0,0,.2),inset 3px 3px 0 rgba(255,255,255,.5)}
+.homebtn{align-self:flex-start;display:inline-block;font:inherit;font-weight:900;font-size:.95rem;padding:8px 14px;border:3px solid var(--line);
+  background:var(--card);color:var(--ink);text-decoration:none;box-shadow:inset -3px -3px 0 rgba(0,0,0,.25),inset 3px 3px 0 rgba(255,255,255,.5)}
+.hero{border:3px solid var(--line);overflow:hidden;margin-bottom:14px;background:#9ED4FF}
+.hero svg{display:block;width:100%;height:auto}
+.album{background:var(--card);color:var(--cardInk);border:3px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px;
+  box-shadow:inset -4px -4px 0 rgba(0,0,0,.18),inset 4px 4px 0 rgba(255,255,255,.45)}
+.album .row{display:flex;flex-wrap:wrap;gap:6px;font-size:1.6rem;line-height:1}
+.album .row span{width:42px;height:42px;display:grid;place-items:center;background:var(--btn);border:3px solid var(--line)}
+.album .row span.lock{font-size:1rem;opacity:.5}
+.album p{margin:0;font-weight:800;color:var(--soft);font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.card{display:flex;align-items:center;gap:12px;text-align:left;padding:12px;background:var(--card);color:var(--cardInk);
+  border:3px solid var(--line);box-shadow:inset -4px -4px 0 rgba(0,0,0,.2),inset 4px 4px 0 rgba(255,255,255,.5);cursor:pointer;font:inherit}
+.card:active{box-shadow:inset 4px 4px 0 rgba(0,0,0,.25)}
+.card .ic{width:52px;height:52px;flex:none;display:grid;place-items:center;font-size:1.7rem;background:#9ED4FF;border:3px solid var(--line)}
+.card .ic svg{width:40px;height:40px}
+.card b{display:block;font-size:1.05rem}
+.card small{display:block;opacity:.75;font-size:.88rem}
+.card .st{color:#C08A00;letter-spacing:2px;font-size:1rem}
+.card.locked{opacity:.55;cursor:default}
+button:focus-visible,.card:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+.bar{display:flex;align-items:center;gap:10px}
+.btn{font:inherit;font-weight:900;font-size:1.05rem;padding:12px 14px;border:3px solid var(--line);background:var(--btn);color:var(--cardInk);cursor:pointer;
+  touch-action:manipulation;box-shadow:inset -4px -4px 0 rgba(0,0,0,.25),inset 4px 4px 0 rgba(255,255,255,.5)}
+.btn:active{box-shadow:inset 4px 4px 0 rgba(0,0,0,.3)}
+.btn.small{font-size:.9rem;padding:8px 12px}
+.btn.go{background:var(--accent);color:#fff}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.bad{background:var(--bad);color:#fff}
+.btn:disabled{cursor:default}
+.progress{flex:1;height:18px;border:3px solid var(--line);background:#5E3B1A;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,#5DBB3F 0 10px,#4CA632 10px 20px);transition:width .25s}
+.panel{background:var(--card);color:var(--cardInk);border:3px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px;
+  box-shadow:inset -5px -5px 0 rgba(0,0,0,.15),inset 5px 5px 0 rgba(255,255,255,.45)}
+.qhead{display:flex;align-items:center;gap:10px}
+.qlabel{font-weight:900;font-size:1.15rem;margin:0;flex:1}
+.speak{width:48px;height:48px;padding:0;font-size:1.3rem;flex:none}
+.display{display:flex;flex-direction:column;align-items:center;gap:10px}
+.sentence{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:clamp(1.25rem,5.2vw,1.7rem);text-align:center;line-height:1.25}
+.pix{display:block;border:3px solid var(--line);background:#fff}
+.pix svg{display:block;width:100%;height:auto;shape-rendering:crispEdges}
+.solo{width:min(150px,44vw)}
+.scene{width:min(400px,88vw)}
+.tower{width:min(360px,88vw)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.one{grid-template-columns:1fr}
+.feedback{font-size:1.06rem;line-height:1.5;min-height:1.5em}
+.feedback b.y{color:var(--ok)} .feedback b.n{color:var(--bad)}
+.slots{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.slot{width:30px;height:38px;border:3px solid var(--line);background:#E9F5FF;display:grid;place-items:center;font-family:"Press Start 2P",monospace;font-size:.85rem}
+.slot.f{background:#5DBB3F;color:#fff;text-shadow:2px 2px 0 #1B1B1B}
+.letters{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.letters .btn{width:52px;height:52px;padding:0;font-family:"Press Start 2P",monospace;font-size:1rem;background:#B48A5A;color:#fff;text-shadow:2px 2px 0 #1B1B1B}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.result{text-align:center;align-items:center}
+.result .stars{font-size:2.6rem;color:#C08A00;letter-spacing:6px}
+.result .score{font-family:"Press Start 2P",monospace;font-size:1.6rem;line-height:1.3}
+.unlock{background:var(--btn);border:3px dashed var(--accent);padding:10px 14px;font-weight:900}
+.tip{margin:0;line-height:1.5;opacity:.85}
+.pic{display:inline-block;width:34px;height:34px;vertical-align:middle;margin-right:6px}
+.pic svg{width:100%;height:100%;shape-rendering:crispEdges}
+.def{background:#fff;border:3px solid var(--line);padding:10px 12px;font-weight:800;text-align:center;line-height:1.4}
+[hidden]{display:none!important}
+@media (max-width:430px){ .opts{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){.shake{animation:none}.progress span{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<a class="homebtn" href="index.html">⟵ Inicio</a>
+  <header class="top">
+    <span class="mascot" id="mascot" aria-hidden="true"></span>
+    <div>
+      <h1>El clima</h1>
+      <p class="sub">Sociales · Tema 1 · Mundo de bloques</p>
+    </div>
+    <div class="stats">
+      <span class="pill" id="starTotal">⭐ 0/27</span>
+      <span class="pill" id="gemTotal">💎 0</span>
+    </div>
+  </header>
+
+  <section id="menu">
+    <div class="hero" id="hero" aria-hidden="true"></div>
+    <div class="album">
+      <p id="nextUnlock"></p>
+      <div class="row" id="stickers"></div>
+      <p id="prizeProg"></p>
+    </div>
+    <div id="exBtns"></div>
+    <div class="grid" id="cards" style="margin-top:14px"></div>
+    <div id="mgCards"></div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="bar">
+      <button class="btn small" id="quit">Salir</button>
+      <div class="progress"><span id="prog"></span></div>
+      <span id="count" style="font-weight:900">1/8</span>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="qhead">
+        <p class="qlabel" id="qLabel"></p>
+        <button class="btn speak" id="speakBtn" aria-label="Escuchar" hidden>🔊</button>
+      </div>
+      <div class="display" id="disp"></div>
+      <div id="opts"></div>
+      <div class="feedback" id="fb" aria-live="polite"></div>
+      <button class="btn go" id="next" hidden>Siguiente ➜</button>
+    </div>
+  </section>
+
+  <section id="result" hidden>
+    <div class="panel result">
+      <div class="stars" id="rStars"></div>
+      <div class="score" id="rScore"></div>
+      <p id="rMsg" style="margin:0;font-size:1.15rem;font-weight:900"></p>
+      <div class="unlock" id="rUnlock" hidden></div>
+      <p class="tip" id="rTip"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <button class="btn go" id="prize" hidden>Jugar al premio</button>
+        <button class="btn go" id="again">Jugar otra vez</button>
+        <button class="btn" id="toMenu">Volver al mundo</button>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="ground" aria-hidden="true"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{ a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick=(a,n)=>shuffle(a).slice(0,n);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const speak=t=>CEVA.speak(t,"es-ES");
+const canSpeak=!!((window.Android&&Android.speakLang)||("speechSynthesis" in window));
+
+/* ---------- PIXEL ART ---------- */
+const PAL={k:"#1B1B1B",w:"#FFFFFF",y:"#FFD23F",o:"#F59E0B",g:"#5DBB3F",G:"#3E8E2B",d:"#8B5A2B",D:"#5E3B1A",b:"#4FA3E0",B:"#2B6CB0",
+  s:"#E3CF8F",S:"#C2A862",r:"#E0444E",R:"#9E2A2F",c:"#D5DDE5",C:"#8C99A6",n:"#F4F8FF",m:"#8A8F98",M:"#5F646C",L:"#8DA94B",p:"#9B6BD6",l:"#9ED4FF",v:"#4A3F3A",t:"#E5C04B",e:"#4C9A2A"};
+function sprite(rows,bg){
+  const h=rows.length,w=rows[0].length; let s=`<svg viewBox="0 0 ${w} ${h}" aria-hidden="true">`+(bg?`<rect width="${w}" height="${h}" fill="${bg}"/>`:"");
+  rows.forEach((r,y)=>{ for(let x=0;x<w;x++){ const c=r[x]; if(c!=="."&&PAL[c]) s+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${PAL[c]}"/>`; } });
+  return s+"</svg>";
+}
+const SPR={
+  thermo:["....kkk.....","...kwwwk....","...kwwwk....","...kwrwk.k..","...kwrwk....","...kwrwk.k..","...kwrwk....","...kwrwk.k..","..krrrrrk...","..krrrrrk...","..krrrrrk...","...kkkkk...."],
+  rain:["............","...kkkk.....","..kccccKk...".replace("K","k"),".kccccccck..","kcccccccccck","kCCCCCCCCCCk",".kkkkkkkkkk.","..b...b...b.","..b..b...b..",".b...b..b...",".b..b...b...","............"],
+  drop:[".....k......","....kbk.....","....kbk.....","...kbbbk....","...kbbbk....","..kbbwbbk...","..kbbwbbk...","..kbbbbbk...","..kbbbbbk...","...kbbbk....","....kkk.....","............"],
+  wind:["............","kkkkkkkk....","........k...","....kkkk....","............","kkkkkkkkkk..","..........k.","......kkkk..","............","kkkkkk......",".......k....","....kkk....."],
+  pluvio:["kkkkkkkkkkkk","kcccccccccck",".kcccccccck.","..kcccccck..","...kkcckk...","....kcck....","...kkkkkk...","...kwwwwk...","...kwwwwk...","...kbbbbk...","...kbbbbk...","...kkkkkk..."],
+  anemo:["............",".kk......kk.","kcck....kcck",".kkkkkkkkkk.","....kCCk....",".....kk.....",".....CC.....",".....CC.....",".....CC.....",".....CC.....","...kkkkkk...","............"],
+  veleta:[".....k......",".....krr....",".....krrr...",".....krrrr..",".....k......","kk...k....k.","kkkkkkkkkkkk","kk...k....k.",".....k......",".....k......","...kkkkk....","............"],
+  baro:["...kkkkkk...","..kwwwwwwk..",".kwrwwwwbwk.","kwwwrwwwwwwk","kwwwwrwwwwwk","kwwwwwkwwwwk","kwwwwwwwwwwk","kwbwwwwwwrwk",".kwwwwwwwwk.","..kwwwwwwk..","...kkkkkk...","............"],
+  higro:[".....k......","....kbk.....","...kbbbk....","...kbwbk....","....kkk.....","..kkkkkkkk..",".kwwwwwwwwk.",".kwwwkrwwwk.",".kwwwkwwwwk.",".kwrwwwwbwk.","..kkkkkkkk..","............"],
+  sun:["....y..y....","..y.yyyy.y..","...yyyyyy...",".yyyoyyoyyy.","..yyyyyyyy..","yyyyyyyyyyyy","..yyoyyoyy..",".yyyyooyyyy.","...yyyyyy...","..y.yyyy.y..","....y..y....","............"],
+  cloud:["............","............","....kkkk....","...kwwwwk...",".kkwwwwwwkk.","kwwwwwwwwwwk","kwwwwwwwwwwk",".kkkkkkkkkk.","............","............","............","............"],
+  snow:["............",".....w......","..w..w..w...","...w.w.w....","....www.....","wwwwwwwwwww.","....www.....","...w.w.w....","..w..w..w...",".....w......","............","............"],
+  globe:["....kkkk....","..kkbbbbkk..",".kbggbbbbbk.",".kbgggbbggk.","kbbggbbbgggk","kbbbbbbbggbk","kbbbbgbbbbbk","kbbbgggbbbbk",".kbbbggbbbk.",".kbbbbbbbbk.","..kkbbbbkk..","....kkkk...."],
+  layers:["kkkkkkkkkkkk","kppppppppppk","kkkkkkkkkkkk","kbbbbbbbbbbk","kkkkkkkkkkkk","kllllllllllk","kkkkkkkkkkkk","kwwwwwwwwwwk","kkkkkkkkkkkk","kggggggggggk","kddddddddddk","kkkkkkkkkkkk"],
+  mountain:["............",".....kk.....","....knnk....","...knnnnk...","...kmnnmk...","..kmmmmmmk..","..kmmMmmmk..",".kmmmmMmmmk.",".kmMmmmmmmk.","kmmmmmmMmmmk","kggggggggggk","kkkkkkkkkkkk"],
+  map:["............","..kkkkkk....",".kggbgggkk..",".kgggggggk..","kggttttggk..","kgtttttttk..","kgttttttrk..",".kttttttrk..",".kkttttrrk..","...kkkkkk...","..........k.","........kkk."],
+  pencil:["..........kk",".........kyk","........kyk.",".......kyk..","......kyk...",".....kyk....","....kyk.....","...kyk......","..kyk.......",".ksk........",".kk.........","............"],
+  trophy:["............","kkkkkkkkkkkk","kyyyyyyyyyyk",".kyyyyyyyyk.","kkyyyyyyyykk","..kyyyyyyk..","...kyyyyk...","....kyyk....",".....kk.....","....kyyk....","...kkkkkk...","...kddddk..."],
+  nubo:["............","....kkkk....","..kkwwwwkk..",".kwwwwwwwwk.","kwwkwwwwkwwk","kwwkwwwwkwwk","kwrwwwwwwrwk","kwwwkkkkwwwk",".kwwwwwwwwk.","..kkkkkkkk..","...b...b....","..b...b....."]
+};
+const spr=(n,bg)=>sprite(SPR[n],bg);
+
+/* bloques 10x10 para paisajes */
+const T=10;
+function blk(x,y,t){
+  const X=x*T,Y=y*T, r=(c,dx,dy,w,h)=>`<rect x="${X+dx}" y="${Y+dy}" width="${w}" height="${h}" fill="${c}"/>`;
+  switch(t){
+    case"grass": return r("#8B5A2B",0,0,10,10)+r("#5DBB3F",0,0,10,3)+r("#5DBB3F",2,3,2,1)+r("#5DBB3F",7,3,1,2)+r("#6E4521",5,6,2,2)+r("#A0703D",1,7,1,1);
+    case"dry": return r("#8B5A2B",0,0,10,10)+r("#C9B45A",0,0,10,3)+r("#C9B45A",3,3,2,1)+r("#6E4521",6,6,2,2);
+    case"dirt": return r("#8B5A2B",0,0,10,10)+r("#6E4521",2,2,2,2)+r("#6E4521",6,6,2,2)+r("#A0703D",7,1,1,1);
+    case"stone": return r("#8A8F98",0,0,10,10)+r("#6F747C",1,2,3,2)+r("#6F747C",6,6,3,2)+r("#A3A8B0",6,1,2,1);
+    case"snow": return r("#8A8F98",0,0,10,10)+r("#F4F8FF",0,0,10,4)+r("#F4F8FF",2,4,2,2)+r("#F4F8FF",7,4,1,1)+r("#6F747C",5,7,3,2);
+    case"sand": return r("#E3CF8F",0,0,10,10)+r("#C9B271",2,2,1,1)+r("#C9B271",6,5,1,1)+r("#C9B271",3,7,1,1);
+    case"water": return r("#3F8FE0",0,0,10,10)+r("#7FC0F5",1,2,3,1)+r("#7FC0F5",6,6,3,1);
+    case"lava": return r("#4A3F3A",0,0,10,10)+r("#5E524C",1,1,3,2)+r("#34302D",6,5,3,3);
+    case"leaf": return r("#3E8E2B",0,0,10,10)+r("#2F6E21",1,1,2,2)+r("#55A83F",6,2,2,2)+r("#2F6E21",4,6,2,2);
+    case"olive": return r("#8DA94B",0,0,10,10)+r("#6E8A35",2,1,2,2)+r("#A8C266",6,5,2,2)+r("#3D4F1C",4,4,1,1);
+    case"pine": return r("#1F5E2E",0,0,10,10)+r("#2C7A3D",2,2,2,2)+r("#174A24",6,6,2,2);
+    case"palm": return r("#4CAF50",0,0,10,10)+r("#357A38",0,4,10,2)+r("#6CCF6F",3,1,2,2);
+    case"wood": return r("#6B4423",0,0,10,10)+r("#4E3018",3,0,1,10)+r("#4E3018",7,0,1,10);
+    case"palmwood": return r("#A1683A",0,0,10,10)+r("#7A4E2B",0,3,10,1)+r("#7A4E2B",0,7,10,1);
+    case"cactus": return r("#4C9A2A",0,0,10,10)+r("#357A1E",2,0,1,10)+r("#357A1E",7,0,1,10)+r("#E8F5C8",4,2,1,1)+r("#E8F5C8",5,6,1,1);
+    case"wheat": return r("#E5C04B",1,2,1,8)+r("#E5C04B",4,0,1,10)+r("#E5C04B",7,3,1,7)+r("#C99A1C",0,2,3,2)+r("#C99A1C",3,0,3,2)+r("#C99A1C",6,3,3,2);
+    case"flower": return r("#3E8E2B",4,4,2,6)+r("#E0444E",3,1,4,3)+r("#FFD23F",4,2,2,1);
+    case"cloud": return r("#FFFFFF",0,2,10,6);
+    case"dark": return r("#AEB8C2",0,2,10,6)+r("#8C99A6",0,6,10,2);
+    case"rain": return r("#3F8FE0",2,1,1,3)+r("#3F8FE0",7,5,1,3);
+    case"flake": return r("#FFFFFF",4,1,2,8)+r("#FFFFFF",1,4,8,2);
+    case"sun": return r("#FFD23F",0,0,10,10)+r("#FFF0A0",2,2,3,3);
+    case"sunO": return r("#FFB84D",0,0,10,10)+r("#FFE08A",2,2,3,3);
+  }
+  return "";
+}
+function scene(sky,list,w=16,h=10){
+  let s=`<svg viewBox="0 0 ${w*T} ${h*T}" aria-hidden="true"><rect width="${w*T}" height="${h*T}" fill="${sky}"/>`;
+  list.forEach(([x,y,t])=>s+=blk(x,y,t)); return s+"</svg>";
+}
+/* utilidades para construir paisajes */
+const col=(x,top,h,topT,under)=>{ const a=[[x,top,topT]]; for(let y=top+1;y<h;y++) a.push([x,y,under]); return a; };
+function land(hs,topT,under,h=10){ return hs.flatMap((t,x)=>t==null?[]:col(x,t,h,typeof topT==="function"?topT(x,t):topT,typeof under==="function"?under(x):under)); }
+const oak=(x,y)=>[[x,y-1,"wood"],[x,y-2,"wood"],[x-1,y-3,"leaf"],[x,y-3,"leaf"],[x+1,y-3,"leaf"],[x,y-4,"leaf"]];
+const olv=(x,y)=>[[x,y-1,"wood"],[x-1,y-2,"olive"],[x,y-2,"olive"],[x+1,y-2,"olive"]];
+const pin=(x,y)=>[[x,y-1,"wood"],[x-1,y-2,"pine"],[x,y-2,"pine"],[x+1,y-2,"pine"],[x,y-3,"pine"],[x,y-4,"pine"]];
+const palm=(x,y)=>[[x,y-1,"palmwood"],[x,y-2,"palmwood"],[x,y-3,"palmwood"],[x-1,y-4,"palm"],[x,y-4,"palm"],[x+1,y-4,"palm"],[x-2,y-3,"palm"],[x+2,y-3,"palm"]];
+const cloud=(x,y,t="cloud",n=3)=>[...Array(n)].map((_,i)=>[x+i,y,t]);
+const rainRow=(x,y,n)=>[...Array(n)].map((_,i)=>[x+i,y,"rain"]);
+
+const BIOMES={
+  "oceánico":scene("#B7C7D6",[...cloud(1,0,"dark",5),...cloud(9,1,"dark",5),...rainRow(1,1,5),...rainRow(9,2,5),
+    ...land([6,6,7,7,7,6,6,6,7,7,7,7,6,6,7,7],"grass","dirt"),...oak(2,6),...oak(6,6),...oak(12,6),...oak(15,7),[9,6,"flower"],[4,6,"flower"]]),
+  "continental":scene("#9ED4FF",[[13,1,"sun"],...cloud(3,1),
+    ...land([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],"dry","dirt"),...[0,1,2,4,5,6,7,9,10,11].map(x=>[x,6,"wheat"]),...oak(14,7)]),
+  "mediterráneo":scene("#9ED4FF",[[2,1,"sun"],...cloud(8,1),
+    ...land([6,6,6,6,7,7,7,7,null,null,null,null,null,null,null,null],"grass","dirt"),[7,7,"sand"],
+    ...land([null,null,null,null,null,null,null,null,8,8,8,8,8,8,8,8],"water","water"),[8,8,"sand"],[8,9,"sand"],[9,9,"sand"],
+    ...olv(2,6),...olv(5,7),[8,7,"sand"]]),
+  "semidesértico":scene("#FFE3B3",[[12,1,"sunO"],[13,1,"sunO"],[12,2,"sunO"],[13,2,"sunO"],
+    ...land([7,7,7,6,6,7,7,7,8,8,7,7,7,7,8,8],"sand","sand"),[4,5,"cactus"],[4,4,"cactus"],[4,3,"cactus"],[3,4,"cactus"],[11,6,"cactus"],[11,5,"cactus"],[12,5,"cactus"],[15,7,"dry"]]),
+  "de montaña":scene("#C9E6FF",[...cloud(12,0),[2,1,"flake"],[6,0,"flake"],[14,2,"flake"],
+    ...land([8,7,6,5,4,3,4,5,6,5,4,2,3,4,6,8],(x,t)=>t<=4?"snow":t<=6?"stone":"grass","stone"),...pin(1,8),...pin(14,6)]),
+  "subtropical":scene("#9ED4FF",[[1,1,"sun"],...cloud(10,1),
+    ...land([null,null,null,7,6,5,5,6,7,null,null,null,null,null,null,null],(x,t)=>t<=5?"lava":"sand","lava"),
+    ...land([8,8,8,null,null,null,null,null,null,8,8,8,8,8,8,8],"water","water"),[3,8,"sand"],[8,8,"sand"],[3,9,"sand"],[8,9,"sand"],...palm(7,6)])
+};
+
+/* torre de capas */
+const LAYERS=["troposfera","estratosfera","mesosfera","termosfera","exosfera"];
+const LCOL={troposfera:"#9ED4FF",estratosfera:"#6FA8E8",mesosfera:"#4A6FC7",termosfera:"#3A3F9E",exosfera:"#1C1B4A"};
+function tower(hi,showNames){
+  const W=180,LH=26,H=LH*5+24; let s=`<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`;
+  LAYERS.slice().reverse().forEach((n,i)=>{ const y=i*LH;
+    s+=`<rect x="0" y="${y}" width="${W}" height="${LH}" fill="${LCOL[n]}" stroke="#1B1B1B" stroke-width="2"/>`;
+    if(n==="exosfera") s+=`<rect x="20" y="${y+6}" width="2" height="2" fill="#fff"/><rect x="140" y="${y+14}" width="2" height="2" fill="#fff"/><rect x="100" y="${y+5}" width="2" height="2" fill="#fff"/>`;
+    if(showNames||n===hi) s+=`<text x="${W/2}" y="${y+17}" text-anchor="middle" font-family="'Press Start 2P',monospace" font-size="${n===hi&&!showNames?9:7}" fill="#fff" stroke="#1B1B1B" stroke-width=".6">${n===hi&&!showNames?"???":n.toUpperCase()}</text>`;
+    if(n===hi) s+=`<rect x="1" y="${y+1}" width="${W-2}" height="${LH-2}" fill="none" stroke="#FFD23F" stroke-width="4"/>`;
+  });
+  s+=`<rect x="0" y="${LH*5}" width="${W}" height="8" fill="#5DBB3F" stroke="#1B1B1B" stroke-width="2"/><rect x="0" y="${LH*5+8}" width="${W}" height="16" fill="#8B5A2B" stroke="#1B1B1B" stroke-width="2"/>`;
+  return s+"</svg>";
+}
+
+/* ---------- DATOS ---------- */
+const CLIMAS={
+  "oceánico":{temp:"suaves todo el año",prec:"abundantes",donde:"el norte de España",lugares:["Galicia","Asturias","Cantabria","el País Vasco"],
+    desc:"Temperaturas suaves todo el año y precipitaciones abundantes."},
+  "continental":{temp:"muy frías en invierno y calurosas en verano",prec:"escasas",donde:"el interior de la península",lugares:["Madrid","Toledo","Illescas","Valladolid","Albacete"],
+    desc:"Inviernos muy fríos, veranos calurosos y precipitaciones escasas."},
+  "mediterráneo":{temp:"suaves en invierno y calurosas en verano",prec:"escasas",donde:"la costa del Mediterráneo y las islas Baleares",lugares:["Barcelona","Valencia","Mallorca","Málaga"],
+    desc:"Inviernos suaves, veranos calurosos y precipitaciones escasas."},
+  "semidesértico":{temp:"suaves en invierno y muy calurosas en verano",prec:"muy escasas",donde:"el sureste de España",lugares:["Almería","Murcia"],
+    desc:"Inviernos suaves, veranos muy calurosos y casi no llueve."},
+  "de montaña":{temp:"muy frías en invierno y frescas en verano",prec:"abundantes, muchas veces en forma de nieve",donde:"las zonas altas de las montañas",lugares:["los Pirineos","Sierra Nevada","los Picos de Europa"],
+    desc:"Inviernos muy fríos, veranos frescos y precipitaciones abundantes, muchas veces de nieve."},
+  "subtropical":{temp:"cálidas todo el año",prec:"escasas",donde:"las islas Canarias",lugares:["Tenerife","Gran Canaria","Lanzarote"],
+    desc:"Temperaturas cálidas todo el año y llueve poco."}
+};
+const CN=Object.keys(CLIMAS);
+const LFACT=[
+  ["Es la capa más cercana a la Tierra: en ella vivimos y respiramos.","troposfera","La troposfera es la capa de abajo, la que toca el suelo."],
+  ["En esta capa se forman las nubes, la lluvia y el viento.","troposfera","Casi todo el tiempo atmosférico ocurre en la troposfera."],
+  ["Aquí está la capa de ozono, que nos protege de los rayos ultravioleta del Sol.","estratosfera","La capa de ozono está en la estratosfera, justo encima de la troposfera."],
+  ["En esta capa se queman los meteoritos y vemos las estrellas fugaces.","mesosfera","Los meteoritos se desintegran en la mesosfera."],
+  ["Es la capa más fría de la atmósfera.","mesosfera","En la parte alta de la mesosfera hace muchísimo frío, ¡unos 90 grados bajo cero!"],
+  ["En esta capa se forman las auroras polares.","termosfera","Las auroras polares se forman en la termosfera."],
+  ["Aunque está muy alta, en esta capa la temperatura es altísima.","termosfera","Termo- significa calor: en la termosfera hace muchísimo calor."],
+  ["Es la última capa: después ya empieza el espacio.","exosfera","Exo- significa fuera: la exosfera es la capa de fuera del todo."]
+];
+const TIEMPO=["Hoy en Illescas hace sol y estamos a 20 grados.","Esta tarde va a llover en Toledo.","Mañana nevará en la sierra.","Ahora mismo sopla mucho viento en el patio.",
+  "Ayer granizó en Madrid.","Este fin de semana habrá tormenta en Valencia.","Esta mañana hay niebla en la carretera.","Esta noche bajarán mucho las temperaturas."];
+const CLIMA_S=["En Galicia llueve mucho durante todo el año.","En Canarias hace calor casi todo el año.","En el interior de la península los inviernos son fríos y los veranos calurosos.",
+  "En la costa mediterránea llueve poco.","En las montañas los inviernos son muy fríos.","En el sureste de España casi nunca llueve.",
+  "En el norte de España las temperaturas son suaves todo el año.","En Almería los veranos suelen ser muy calurosos y secos."];
+const ELEM={
+  "temperatura":["Lo caliente o lo frío que está el aire.","thermo"],
+  "precipitaciones":["El agua que cae de las nubes: lluvia, nieve o granizo.","rain"],
+  "humedad":["La cantidad de vapor de agua que hay en el aire.","drop"],
+  "presión atmosférica":["El peso del aire sobre la superficie de la Tierra.","baro"],
+  "viento":["El aire en movimiento.","wind"]
+};
+const EN=Object.keys(ELEM);
+const INSTR={
+  "termómetro":["la temperatura","thermo"],
+  "pluviómetro":["la cantidad de agua que cae (lluvia, nieve o granizo)","pluvio"],
+  "anemómetro":["la velocidad del viento","anemo"],
+  "veleta":["la dirección del viento","veleta"],
+  "barómetro":["la presión atmosférica","baro"],
+  "higrómetro":["la humedad del aire","higro"]
+};
+const IN=Object.keys(INSTR);
+const FACT={
+  "la distancia al mar":"Cerca del mar hace menos calor en verano y menos frío en invierno, y llueve más.",
+  "el relieve":"Las montañas detienen las nubes y no las dejan pasar hacia el interior.",
+  "la altitud":"Cuanto más alto, más frío hace y más llueve.",
+  "la latitud":"Cerca de los polos hace más frío; cerca del Ecuador hace más calor."
+};
+const FN=Object.keys(FACT);
+const FCASE=[
+  ["Santander está junto al mar y Madrid está lejos. Por eso en Santander los inviernos son menos fríos.","la distancia al mar"],
+  ["En la costa los veranos son menos calurosos que en el interior.","la distancia al mar"],
+  ["Las nubes que vienen del Atlántico chocan con las montañas y descargan la lluvia antes de llegar a la meseta.","el relieve"],
+  ["Detrás de una cordillera llueve mucho menos que delante.","el relieve"],
+  ["En lo alto de la sierra hace más frío que en el pueblo del valle.","la altitud"],
+  ["En la cima de la montaña hay nieve aunque abajo no haya.","la altitud"],
+  ["Canarias está más cerca del Ecuador que el resto de España: hace calor casi todo el año.","la latitud"],
+  ["En los países que están cerca del Polo Norte hace mucho frío.","la latitud"]
+];
+const WORDS=[
+  ["TROPOSFERA","La capa de la atmósfera donde vivimos y se forman las nubes."],
+  ["ESTRATOSFERA","La capa donde está la capa de ozono."],
+  ["MESOSFERA","La capa donde se queman los meteoritos."],
+  ["TERMOSFERA","La capa donde se forman las auroras polares."],
+  ["EXOSFERA","La última capa de la atmósfera."],
+  ["CLIMA","El tiempo que suele hacer en un lugar durante muchos años."],
+  ["VIENTO","El aire en movimiento."],
+  ["HUMEDAD","El vapor de agua que hay en el aire."],
+  ["VELETA","Indica la dirección del viento."],
+  ["TERMÓMETRO","Mide la temperatura."],
+  ["BARÓMETRO","Mide la presión atmosférica."],
+  ["ANEMÓMETRO","Mide la velocidad del viento."],
+  ["PLUVIÓMETRO","Mide el agua que cae cuando llueve o nieva."],
+  ["HIGRÓMETRO","Mide la humedad del aire."],
+  ["ALTITUD","La altura de un lugar sobre el nivel del mar."],
+  ["LATITUD","La distancia de un lugar al Ecuador."],
+  ["RELIEVE","Las montañas, valles y llanuras de un territorio."],
+  ["CANARIAS","Las islas con clima subtropical."]
+];
+
+/* ---------- PREGUNTAS ---------- */
+const opt=a=>a.map(x=>({html:cap(x),val:x}));
+const mc=(key,label,display,options,answer,explain,one)=>({key,label,display,options:opt(options),answer,explain,one});
+const sent=t=>`<div class="sentence">${t}</div>`;
+const def=t=>`<div class="def">${t}</div>`;
+const four=(all,a)=>shuffle([a,...pick(all.filter(x=>x!==a),3)]);
+const GEN={
+  atm(){
+    const k=Math.random();
+    if(k<.35){ const n=rnd(LAYERS); return mc("t"+n,"¿Cómo se llama la capa marcada?",`<span class="pix tower">${tower(n,false)}</span>`,four(LAYERS,n),n,
+      `Es la ${n}. De abajo arriba: troposfera, estratosfera, mesosfera, termosfera y exosfera.`); }
+    if(k<.75){ const [s,a,e]=rnd(LFACT); return mc("f"+s,"¿De qué capa hablamos?",def(s),four(LAYERS,a),a,e); }
+    if(k<.9){ const up=Math.random()<.5, i=up?Math.floor(Math.random()*4):1+Math.floor(Math.random()*4), a=LAYERS[up?i+1:i-1];
+      return mc("o"+up+i,up?"¿Qué capa está justo encima?":"¿Qué capa está justo debajo?",sent(`${up?"Encima":"Debajo"} de la ${LAYERS[i]} está la…`),four(LAYERS.filter(x=>x!==LAYERS[i]),a),a,
+        "Orden de abajo arriba: troposfera, estratosfera, mesosfera, termosfera, exosfera."); }
+    return rnd([
+      ()=>mc("bio","¿Es una capa de la atmósfera?",sent("¿La biosfera es una capa de la atmósfera?"),["no","sí"],"no","La biosfera es donde viven los seres vivos, pero no es una capa de la atmósfera."),
+      ()=>mc("n5","Elige.",sent("¿Cuántas capas tiene la atmósfera?"),["5","3","4","6"],"5","Tiene cinco capas: troposfera, estratosfera, mesosfera, termosfera y exosfera."),
+      ()=>mc("aire","Completa.",sent("La atmósfera es la capa de ___ que rodea la Tierra."),["aire","agua","roca","hielo"],"aire","La atmósfera es la capa de aire que rodea la Tierra.")
+    ])();
+  },
+  tiempo(){
+    const k=Math.random();
+    if(k<.7){ const t=Math.random()<.5, s=rnd(t?TIEMPO:CLIMA_S); return mc("s"+s,"¿Tiempo atmosférico o clima?",sent(s),["tiempo atmosférico","clima"],t?"tiempo atmosférico":"clima",
+      t?"Habla de un momento concreto (hoy, mañana, ahora…): es el tiempo atmosférico.":"Habla de lo que pasa normalmente durante muchos años: es el clima."); }
+    return rnd([
+      ()=>mc("dt","¿Qué es?",def("El estado de la atmósfera en un momento y un lugar concretos."),["tiempo atmosférico","clima"],"tiempo atmosférico","El tiempo atmosférico cambia de un día a otro."),
+      ()=>mc("dc","¿Qué es?",def("El tiempo que suele hacer en un lugar durante un periodo largo, de muchos años."),["clima","tiempo atmosférico"],"clima","El clima es lo que pasa normalmente en un lugar año tras año."),
+      ()=>mc("me","¿Qué ciencia es?",def("La ciencia que estudia el tiempo atmosférico."),["meteorología","climatología"],"meteorología","La meteorología estudia el tiempo. Por eso a quien da el tiempo en la tele le llamamos meteorólogo."),
+      ()=>mc("cl","¿Qué ciencia es?",def("La ciencia que estudia el clima."),["climatología","meteorología"],"climatología","La climatología estudia el clima.")
+    ])();
+  },
+  elem(){
+    const k=Math.random(), e=rnd(EN), [d,sp]=ELEM[e];
+    if(k<.5) return mc("d"+e,"¿Qué elemento del tiempo es?",def(d),four(EN,e),e,`${cap(e)}: ${d.charAt(0).toLowerCase()+d.slice(1)}`);
+    if(k<.8) return mc("p"+e,"¿Qué elemento del tiempo representa el dibujo?",`<span class="pix solo">${spr(sp)}</span>`,four(EN,e),e,`${cap(e)}: ${d.charAt(0).toLowerCase()+d.slice(1)}`);
+    return rnd([
+      ()=>mc("pr","Elige.",sent("La lluvia, la nieve y el granizo son…"),["precipitaciones","humedad","viento","presión atmosférica"],"precipitaciones","Todas son agua que cae de las nubes: precipitaciones."),
+      ()=>mc("no","¿Cuál NO es un elemento del tiempo?",sent("¿Cuál de estos NO es un elemento del tiempo?"),["el relieve","la temperatura","el viento","la humedad"],"el relieve","El relieve es un factor del clima, no un elemento del tiempo.")
+    ])();
+  },
+  instr(){
+    const k=Math.random(), i=rnd(IN), [m,sp]=INSTR[i];
+    if(k<.35) return mc("m"+i,"¿Qué mide?",sent(`¿Qué mide ${i==="veleta"?"la":"el"} ${i}?`),four(IN.map(x=>INSTR[x][0]),m),m,`${i==="veleta"?"La":"El"} ${i} ${i==="veleta"?"indica":"mide"} ${m}.`,true);
+    if(k<.7) return mc("q"+i,"¿Qué instrumento es?",def(`${i==="veleta"?"Indica":"Mide"} ${m}.`),four(IN,i),i,`Es ${i==="veleta"?"la":"el"} ${i}.`);
+    return mc("p"+i,"¿Qué instrumento de la estación meteorológica es?",`<span class="pix solo">${spr(sp)}</span>`,four(IN,i),i,`Es ${i==="veleta"?"la":"el"} ${i}: ${i==="veleta"?"indica":"mide"} ${m}.`);
+  },
+  fact(){
+    const k=Math.random();
+    if(k<.45){ const f=rnd(FN); return mc("d"+f,"¿Qué factor del clima es?",def(FACT[f]),shuffle(FN),f,`Es ${f}. ${FACT[f]}`); }
+    if(k<.9){ const [s,a]=rnd(FCASE); return mc("c"+s,"¿Qué factor lo explica?",def(s),shuffle(FN),a,`Lo explica ${a}. ${FACT[a]}`); }
+    return rnd([
+      ()=>mc("al","Elige.",sent("Cuanto más alto subes en una montaña…"),["más frío hace","más calor hace"],"más frío hace","Con la altitud la temperatura baja: arriba hace más frío."),
+      ()=>mc("ma","Elige.",sent("Cerca del mar, las temperaturas son…"),["más suaves","más extremas"],"más suaves","El mar suaviza las temperaturas: menos calor en verano y menos frío en invierno.")
+    ])();
+  },
+  climas(){
+    const k=Math.random(), c=rnd(CN), C=CLIMAS[c];
+    if(k<.45) return mc("d"+c,"¿Qué clima es?",def(C.desc),four(CN,c),c,`Es el clima ${c}: ${C.desc.charAt(0).toLowerCase()+C.desc.slice(1)}`);
+    if(k<.75){ const ps=["abundantes","escasas","muy escasas"], a=C.prec.startsWith("abundantes")?"abundantes":C.prec;
+      return mc("p"+c,"¿Cómo son las precipitaciones?",sent(`En el clima ${c}, las precipitaciones son…`),ps,a,`Clima ${c}: precipitaciones ${C.prec}.`,true); }
+    const ts=[...new Set(CN.map(x=>CLIMAS[x].temp))];
+    return mc("t"+c,"¿Cómo son las temperaturas?",sent(`En el clima ${c}, las temperaturas son…`),four(ts,C.temp),C.temp,`Clima ${c}: temperaturas ${C.temp}.`,true);
+  },
+  donde(){
+    const k=Math.random(), c=rnd(CN), C=CLIMAS[c];
+    if(k<.4){ const l=rnd(C.lugares); return mc("l"+l,"¿Qué clima tiene?",sent(`¿Qué clima tiene ${l}?`),four(CN,c),c,`${cap(l)} está en ${C.donde}: clima ${c}.`); }
+    if(k<.7) return mc("w"+c,"¿Dónde está este clima?",sent(`¿Dónde encontramos el clima ${c}?`),four(CN.map(x=>CLIMAS[x].donde),C.donde),C.donde,`El clima ${c} está en ${C.donde}.`,true);
+    return mc("b"+c,"¿Qué clima es este paisaje?",`<span class="pix scene">${BIOMES[c]}</span>`,four(CN,c),c,`Es el clima ${c}. ${C.desc}`);
+  }
+};
+
+const GAMES=[
+  {id:"atm",   ic:"layers", name:"Las capas de la atmósfera",topic:"Troposfera, estratosfera…"},
+  {id:"tiempo",ic:"sun",    name:"¿Tiempo o clima?",topic:"Meteorología y climatología"},
+  {id:"elem",  ic:"rain",   name:"Elementos del tiempo",topic:"Temperatura, viento, humedad…"},
+  {id:"instr", ic:"anemo",  name:"Estación meteorológica",topic:"Termómetro, veleta…"},
+  {id:"fact",  ic:"mountain",name:"Factores del clima",topic:"Mar, relieve, altitud, latitud"},
+  {id:"climas",ic:"globe",  name:"Climas de España",topic:"Temperaturas y precipitaciones"},
+  {id:"donde", ic:"map",    name:"¿Dónde está cada clima?",topic:"Lugares y paisajes"},
+  {id:"spell", ic:"pencil", name:"Construye la palabra",topic:"Bloque a bloque"},
+  {id:"final", ic:"trophy", name:"Reto final del clima",topic:"De todo un poco"}
+];
+const TIPS={
+  atm:"De abajo arriba: TROPO, ESTRATO, MESO, TERMO, EXO.",
+  tiempo:"Hoy, mañana, ahora → tiempo. Siempre, normalmente, todo el año → clima.",
+  elem:"Los cinco elementos: temperatura, precipitaciones, humedad, presión y viento.",
+  instr:"Veleta = dirección del viento. Anemómetro = velocidad del viento.",
+  fact:"Los cuatro factores: distancia al mar, relieve, altitud y latitud.",
+  climas:"Oceánico = llueve mucho. Semidesértico = casi no llueve. Subtropical = calor todo el año.",
+  donde:"Norte = oceánico. Interior = continental. Canarias = subtropical.",
+  spell:"Lee la pista y toca las letras en orden.",
+  final:"Si fallas algo, vuelve a ese juego y repásalo."
+};
+
+const MILES=[
+  {at:3,st:"🌱",name:"Brote"},{at:6,st:"🌧️",name:"Lluvia"},{at:9,st:"☀️",name:"Sol"},{at:12,st:"❄️",name:"Nieve"},{at:15,st:"🌵",name:"Cactus"},
+  {at:18,st:"🌊",name:"Mar"},{at:21,st:"🌋",name:"Volcán"},{at:24,st:"🌈",name:"Arcoíris"},{at:27,st:"👑",name:"Corona"}
+];
+
+/* ---------- ESTADO ---------- */
+const KEY="climaSociales_v1_"+PROFILE;
+let save={best:{},perfect:{}};
+try{ const s=JSON.parse(STORE.get(KEY)); if(s) save=Object.assign(save,s); }catch(e){}
+const persist=()=>STORE.set(KEY,JSON.stringify(save));
+const totalStars=()=>GAMES.reduce((a,g)=>a+(save.best[g.id]||0),0);
+const isOpen=i=>i===0||(save.best[GAMES[i-1].id]||0)>=1;
+const starStr=n=>"★".repeat(n)+"☆".repeat(3-n);
+const starsFor=(s,t)=>{const p=s/t;return p>=.9?3:p>=.7?2:p>=.4?1:0;};
+
+function renderMenu(){
+  const tot=totalStars();
+  $("starTotal").textContent=`⭐ ${tot}/27`;
+  $("gemTotal").textContent=`💎 ${CEVA.wallet(PROFILE)}`;
+  $("stickers").innerHTML=MILES.map(m=>tot>=m.at?`<span title="${m.name}">${m.st}</span>`:`<span class="lock">🔒</span>`).join("");
+  const nx=MILES.find(m=>tot<m.at);
+  $("nextUnlock").textContent=nx?`Álbum de pegatinas · Siguiente desbloqueo con ${nx.at}⭐ (te faltan ${nx.at-tot})`:"Álbum completo. ¡Eres un crack del clima!";
+  const done=GAMES.filter(g=>save.perfect[g.id]).length;
+  $("prizeProg").textContent=`Premio: ${done}/${GAMES.length} juegos sin fallos`+(save.vueltas?` · Vueltas completadas: ${save.vueltas}`:"")+" · Cada estrella = 1 💎";
+  const box=$("cards"); box.innerHTML="";
+  GAMES.forEach((g,i)=>{
+    const open=isOpen(i), b=document.createElement("button");
+    b.className="card"+(open?"":" locked");
+    b.innerHTML=`<span class="ic">${open?spr(g.ic):"🔒"}</span><span><b>${g.name}</b><small>${open?g.topic:"Consigue 1⭐ en el anterior"}</small>
+      <span class="st">${starStr(save.best[g.id]||0)}${save.perfect[g.id]?" ✔":""}</span></span>`;
+    if(open) b.onclick=()=>start(g.id); else b.disabled=true;
+    box.appendChild(b);
+  });
+}
+function show(id){ ["menu","play","result"].forEach(s=>$(s).hidden=s!==id); window.scrollTo(0,0); }
+
+let S=null;
+function buildQs(kinds,n){
+  const used=new Set(), qs=[]; let tries=0;
+  while(qs.length<n&&tries<500){ tries++; const q=GEN[rnd(kinds)](); if(used.has(q.key)) continue; used.add(q.key); qs.push(q); }
+  while(qs.length<n) qs.push(GEN[rnd(kinds)]());
+  return qs;
+}
+function start(id){
+  S={id,i:0,score:0,answered:false,before:totalStars()};
+  if(id==="spell"){ S.words=pick(WORDS,6); S.total=6; }
+  else if(id==="final"){ S.qs=buildQs(["atm","tiempo","elem","instr","fact","climas","donde"],10); S.total=10; }
+  else { S.qs=buildQs([id],8); S.total=8; }
+  show("play"); render();
+}
+function header(){
+  $("count").textContent=`${S.i+1}/${S.total}`;
+  $("prog").style.width=(S.i/S.total*100)+"%";
+  $("fb").innerHTML=""; $("next").hidden=true; S.answered=false;
+}
+function render(){
+  header();
+  if(S.id==="spell") return renderSpell();
+  const q=S.qs[S.i];
+  $("qLabel").textContent=q.label;
+  $("disp").innerHTML=q.display;
+  const txt=$("disp").querySelector(".sentence,.def");
+  $("speakBtn").hidden=!canSpeak||!txt; $("speakBtn").onclick=()=>{ if(txt) speak(txt.textContent.replace(/_+/g,"…")); };
+  const o=$("opts"); o.innerHTML=""; o.className="opts"+(q.one?" one":"");
+  q.options.forEach(op=>{ const b=document.createElement("button"); b.className="btn"; b.innerHTML=op.html; b.dataset.val=op.val; b.onclick=()=>choose(op.val,b); o.appendChild(b); });
+}
+function choose(val,btn){
+  if(S.answered) return; S.answered=true;
+  const q=S.qs[S.i], ok=val===q.answer;
+  [...$("opts").children].forEach(b=>{ b.disabled=true; if(b.dataset.val===q.answer) b.classList.add("ok"); });
+  if(!ok) btn.classList.add("bad","shake"); else S.score++;
+  $("fb").innerHTML=(ok?'<b class="y">¡Bloque conseguido! ⛏️</b> ':'<b class="n">¡Ups!</b> ')+q.explain;
+  $("next").hidden=false; $("next").focus();
+}
+
+/* construye la palabra */
+function renderSpell(){
+  const [w,d]=S.words[S.i]; S.pos=0; S.miss=false;
+  $("qLabel").textContent="Construye la palabra bloque a bloque.";
+  $("speakBtn").hidden=!canSpeak; $("speakBtn").onclick=()=>speak(d);
+  $("disp").innerHTML=`${def(d)}<div class="slots" id="slots">${[...w].map(()=>`<span class="slot"></span>`).join("")}</div>`;
+  const o=$("opts"); o.className="letters";
+  let L=shuffle([...w]); if(L.join("")===w) L=shuffle(L);
+  o.innerHTML=L.map(l=>`<button class="btn" data-l="${l}">${l}</button>`).join("");
+  o.querySelectorAll("button").forEach(b=>b.onclick=()=>tapLetter(b));
+}
+function tapLetter(b){
+  if(S.answered||b.disabled) return;
+  const [w]=S.words[S.i];
+  if(b.dataset.l===w[S.pos]){
+    const sl=$("slots").children[S.pos]; sl.textContent=b.dataset.l; sl.classList.add("f"); b.disabled=true; b.style.visibility="hidden"; S.pos++;
+    if(S.pos===w.length){ S.answered=true; if(!S.miss) S.score++;
+      $("fb").innerHTML=(S.miss?'<b class="y">¡Construida!</b> ':'<b class="y">¡Perfecta! ⛏️</b> ')+`${w}.`;
+      $("next").hidden=false; $("next").focus(); }
+  } else {
+    S.miss=true; b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake","bad"); setTimeout(()=>b.classList.remove("bad"),450);
+    $("fb").innerHTML='<b class="n">Ese bloque no va ahora.</b> Lee otra vez la pista.';
+  }
+}
+
+function next(){ S.i++; if(S.i>=S.total) return finish(); render(); }
+function finish(){
+  $("prog").style.width="100%";
+  const st=starsFor(S.score,S.total);
+  save.best[S.id]=Math.max(save.best[S.id]||0,st);
+  save.gems=(save.gems||0)+st;
+  const perfect=S.score===S.total; if(perfect) save.perfect[S.id]=true;
+  persist();
+  $("rStars").textContent=starStr(st);
+  $("rScore").textContent=`${S.score}/${S.total}`;
+  const after=totalStars(), news=MILES.filter(m=>S.before<m.at&&after>=m.at);
+  const done=GAMES.filter(g=>save.perfect[g.id]).length, all=done===GAMES.length;
+  $("rMsg").textContent=all?"¡Todos los juegos sin fallos! Te has ganado el premio."
+    :perfect?`¡Todo perfecto! Llevas ${done} de ${GAMES.length} juegos sin fallos.`
+    :st===3?"¡Genial! Casi perfecto.":st===2?"¡Muy bien!":st===1?"¡Bien! Sigue practicando.":"Vuelve a intentarlo, ¡tú puedes!";
+  const unl=news.map(m=>`${m.st} Nueva pegatina: ${m.name}`).join("<br>");
+  $("rUnlock").hidden=!unl; $("rUnlock").innerHTML=unl;
+  $("rTip").textContent=(st?`Ganas ${st} 💎. `:"Sin estrellas no hay gemas esta vez. ")+"Truco: "+TIPS[S.id];
+  $("gemTotal").textContent=`💎 ${CEVA.wallet(PROFILE)}`;
+  $("prize").hidden=!all;
+  show("result"); $("again").focus();
+}
+$("next").onclick=next;
+$("quit").onclick=()=>{ renderMenu(); show("menu"); };
+$("again").onclick=()=>start(S.id);
+$("toMenu").onclick=()=>{ renderMenu(); show("menu"); };
+$("prize").onclick=()=>{ save.perfect={}; persist(); Premios.start(save.vueltas||0,()=>{ save.best={}; save.perfect={}; save.vueltas=(save.vueltas||0)+1; persist(); renderMenu(); show("menu"); }); };
+
+/* portada y mascota */
+$("mascot").innerHTML=`<span class="pix" style="border:none;background:none">${spr("nubo")}</span>`;
+$("hero").innerHTML=scene("#9ED4FF",[[2,1,"sun"],...cloud(7,1),...cloud(23,2,"dark",4),...rainRow(23,3,4),[16,0,"flake"],[18,2,"flake"],
+  ...land([7,7,7,7,6,6,7,7,8,8,8,8,6,5,4,3,2,3,4,5,6,7,7,7,7,8,8,8,8,8,8,8],(x,t)=>x>=8&&x<=11||x>=25?"water":t<=3?"snow":t<=5?"stone":x>=21&&x<=24?"sand":"grass",
+    (x)=>x>=8&&x<=11||x>=25?"water":"dirt"),...oak(2,7),...olv(5,6),...pin(13,5),[22,6,"cactus"],[22,5,"cactus"],...palm(27,8).map(([x,y,t])=>[x,y-1,t])],32,10);
+
+/* ---------- MINIJUEGOS ---------- */
+MiniGames.init({
+  lang:"es-ES",
+  theme:{bg:"#DDF1FF",card:"#F4EBD9",ink:"#1E1E1E",line:"#1B1B1B",accent:"#3E8E2B",soft:"#E6D8BC",rad:"0px",head:'"Press Start 2P",monospace'},
+  getSave:()=>save,
+  persist,
+  addGems(n){ save.gems=(save.gems||0)+n; persist(); },
+  onChange:()=>renderMenu(),
+  hang:()=>WORDS.map(([w,d])=>({w,hint:`<p class="mg-big" style="font-size:1.2rem">${d}</p>`})),
+  pairsTitle:"Junta cada instrumento con lo que mide",
+  pairs:()=>IN.map(i=>[`<b>${cap(i)}</b>`,cap(INSTR[i][0].replace(" (lluvia, nieve o granizo)",""))]),
+  search:()=>[
+    {title:"Capas de la atmósfera",words:["TROPOSFERA","ESTRATOSFERA","MESOSFERA","TERMOSFERA","EXOSFERA","OZONO"]},
+    {title:"Elementos del tiempo",words:["TEMPERATURA","HUMEDAD","PRESION","VIENTO","LLUVIA","NIEVE"]},
+    {title:"Instrumentos",words:["VELETA","BAROMETRO","TERMOMETRO","ANEMOMETRO","HIGROMETRO","PLUVIOMETRO"]},
+    {title:"Climas de España",words:["OCEANICO","CONTINENTAL","MONTAÑA","SUBTROPICAL","CANARIAS","MEDITERRANEO"]}
+  ],
+  quiz:()=>{ const q=GEN[rnd(["atm","tiempo","elem","instr","fact","climas","donde"])](); return {label:q.label,display:q.display,options:q.options,answer:q.answer}; },
+  dict:()=>["atmósfera","troposfera","estratosfera","mesosfera","termosfera","exosfera","clima","tiempo","temperatura","precipitaciones","humedad","presión","viento",
+    "termómetro","pluviómetro","anemómetro","veleta","barómetro","higrómetro","altitud","latitud","relieve","oceánico","continental","mediterráneo","subtropical","meteorología","climatología"],
+  catch:()=>[
+    {title:"Toca solo las capas de la atmósfera",yes:LAYERS,no:["biosfera","pluviómetro","relieve","Canarias","granizo"]},
+    {title:"Toca solo los instrumentos meteorológicos",yes:IN,no:["viento","humedad","troposfera","latitud","Galicia"]},
+    {title:"Toca solo los elementos del tiempo",yes:["temperatura","precipitaciones","humedad","presión","viento"],no:["altitud","latitud","relieve","veleta","exosfera"]},
+    {title:"Toca solo los climas de España",yes:CN,no:["polar","ecuatorial","troposfera","barómetro"]}
+  ]
+});
+const _renderMenu=renderMenu;
+renderMenu=function(){ _renderMenu(); const pp=$("prizeProg"); if(pp) pp.textContent+=` · Próximo premio: ${Premios.NAMES[(save.vueltas||0)%Premios.NAMES.length]}`; MiniGames.renderCards($("mgCards")); if(window.Extras) Extras.renderButtons($("exBtns")); };
+renderMenu();
+</script>
+<script src="sociales-cfg.js"></script>
+</body>
+</html>
